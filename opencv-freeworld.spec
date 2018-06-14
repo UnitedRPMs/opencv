@@ -49,7 +49,7 @@ BuildRequires:  pkgconfig(libv4lconvert)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  pkgconfig(libglog)
 BuildRequires:	gflags-devel
-BuildRequires:	ceres-solver
+BuildRequires:	ceres-solver-devel
 
 %if %{with qt5}
 BuildRequires:  pkgconfig(Qt5Concurrent) >= 5.2.0
