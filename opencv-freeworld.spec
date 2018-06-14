@@ -207,7 +207,8 @@ pushd build
 %endif
       -DWITH_XINE=ON                   \
       -DBUILD_DOCS=ON                  \
-      -DBUILD_TESTS=OFF                \
+      -DINSTALL_C_EXAMPLES=ON          \
+      -DINSTALL_PYTHON_EXAMPLES=ON     \
       -DENABLE_PRECOMPILED_HEADERS=OFF \
       -DCMAKE_SKIP_RPATH=ON            \
       -DBUILD_WITH_DEBUG_INFO=OFF      \
@@ -215,13 +216,17 @@ pushd build
       -DWITH_CUDA=ON                   \
 %endif
 %ifarch x86_64
-      -DCPU_BASELINE=SSE2 \
+      -DCPU_BASELINE=SSE2              \
       -DCPU_DISPATCH=SSE3,SSE4_1,SSE4_2,AVX,FP16,AVX2 \
 %else
-      -DCPU_BASELINE_DISABLE=SSE \
-      -DCPU_DISPATCH=SSE,SSE2,SSE3 \
+      -DCPU_BASELINE_DISABLE=SSE       \
+      -DCPU_DISPATCH=SSE,SSE2,SSE3     \
 %endif
       -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib-%{version}/modules \
+%ifarch aarch64
+      -DCPU_BASELINE=NEON              \
+      -DCPU_DISPATCH=FP16              \
+%endif
       -Wno-dev  ..
 
 %make_build VERBOSE=0
