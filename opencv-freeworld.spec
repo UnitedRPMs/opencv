@@ -267,6 +267,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/libopencv_video.so.%{abiver}*
 %{_libdir}/libopencv_videoio.so.%{abiver}*
 %{_libdir}/libopencv_videostab.so.%{abiver}*
+%{_libdir}/libopencv_sfm.so.%{abiver}*
+%exclude %{_libdir}/libopencv_xfeatures2d.so.%{abiver}*
 
 %files devel
 %{_includedir}/opencv
