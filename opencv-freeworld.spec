@@ -5,7 +5,7 @@
 
 %global abiver  3.4
 %bcond_without qt5
-%bcond_without cuda
+%bcond_with cuda
 
 Name:           opencv-freeworld
 Version:        3.4.1
