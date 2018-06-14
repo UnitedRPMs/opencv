@@ -4,7 +4,6 @@ jobs:
     docker: 
       - image: davidva/unibuild-28
     working_directory: ~/enjoy
-    no_output_timeout: 40m
     parallelism: 1
     steps:
       - checkout
