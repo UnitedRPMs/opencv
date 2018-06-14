@@ -1,7 +1,7 @@
-# opencv-xfeatures2d
+# opencv-freeworld
 
-[![CircleCI](https://circleci.com/gh/UnitedRPMs/opencv-xfeatures2d.svg?style=svg)](https://circleci.com/gh/UnitedRPMs/opencv-xfeatures2d)
+[![CircleCI](https://circleci.com/gh/UnitedRPMs/opencv-freeworld.svg?style=svg)](https://circleci.com/gh/UnitedRPMs/opencv-freeworld)
 
-xfeatures2d contrib.
+freeworld contrib.
 
 
