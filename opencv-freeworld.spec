@@ -47,6 +47,9 @@ BuildRequires:  pkgconfig(libtiff-4)
 BuildRequires:  pkgconfig(libv4l2)
 BuildRequires:  pkgconfig(libv4lconvert)
 BuildRequires:  pkgconfig(zlib)
+BuildRequires:  pkgconfig(libglog)
+BuildRequires:	gflags-devel
+BuildRequires:	ceres-solver
 
 %if %{with qt5}
 BuildRequires:  pkgconfig(Qt5Concurrent) >= 5.2.0
@@ -203,6 +206,7 @@ pushd build
       -DWITH_QT=ON                     \
 %endif
       -DWITH_XINE=ON                   \
+      -DBUILD_DOCS=ON                  \
       -DBUILD_TESTS=OFF                \
       -DENABLE_PRECOMPILED_HEADERS=OFF \
       -DCMAKE_SKIP_RPATH=ON            \
