@@ -90,7 +90,7 @@ and Computer Vision algorithms.
 %package        core
 Summary:        OpenCV core libraries
 Provides:	opencv-core = %{version}-%{release}
-Recommends:	opencv-xfeatures2d = %{version}-%{release}
+Recommends:	%{name}-xfeatures2d = %{version}-%{release}
 
 %description    core
 This package contains the OpenCV C/C++ core libraries.
@@ -155,7 +155,7 @@ This package contains Python3 bindings for the OpenCV library.
 %package        contrib
 Summary:        OpenCV contributed functionality
 Provides:	opencv-contrib = %{version}-%{release}
-Recommends:	opencv-xfeatures2d-devel = %{version}-%{release}
+Recommends:	%{name}-xfeatures2d-devel = %{version}-%{release}
 
 %description    contrib
 This package is intended for development of so-called "extra" modules, contributed
@@ -173,7 +173,7 @@ xfeatures2d contrib.
 
 %package        xfeatures2d-devel
 Summary:        Development files for using the OpenCV library
-Requires:	opencv-xfeatures2d = %{version}-%{release}
+Requires:	%{name}-xfeatures2d = %{version}-%{release}
 
 %description    xfeatures2d-devel
 This package contains the OpenCV C/C++ library and header files. It should be installed if you want to develop programs that
