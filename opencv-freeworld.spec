@@ -25,6 +25,8 @@ Patch3:		opencv-3.4.1-cmake_va_intel_fix.patch
 Patch1:		opencv-3.2.0-gcc-6.0.patch
 Patch2:		opencv-3.4.1-compilation-C-mode.patch
 
+Patch4:		static_path.patch
+
 BuildRequires:  libtool
 BuildRequires:  cmake 
 BuildRequires:  gtk3-devel
@@ -101,6 +103,7 @@ Summary:        Development files for using the OpenCV library
 Provides:	opencv-devel = %{version}-%{release}
 Requires:       %{name}%{_isa} = %{version}-%{release}
 Requires:       %{name}-contrib%{_isa} = %{version}-%{release}
+Recommends:	%{name}-static = %{version}-%{release}
 
 %description    devel
 This package contains the OpenCV C/C++ library and header files, as well as
@@ -179,12 +182,21 @@ This package contains the OpenCV C/C++ library and header files. It should be in
 will use the OpenCV library. 
 
 
+%package        static
+Summary:        Development static libs for OpenCV
+
+%description    static
+This package contains the OpenCV C/C++ static library. It should be installed if you want to develop programs that
+will use the static OpenCV library.
+
+
 %prep
 %setup -n opencv-%{version} -a 1
 %patch -p1
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 ipp_file=%{S:2} 
 ipp_dir=.cache/ippicv                           
@@ -287,6 +299,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/libopencv_videostab.so.%{abiver}*
 %{_libdir}/libopencv_sfm.so.%{abiver}*
 %exclude %{_libdir}/libopencv_xfeatures2d.so.%{abiver}*
+%{_libdir}/libopencv_dnn_objdetect.so.%{abiver}*
+%{_libdir}/libopencv_features2d.so.%{abiver}*
 
 %files devel
 %{_includedir}/opencv
@@ -339,13 +353,18 @@ find %{buildroot} -name '*.la' -delete
 
 %files xfeatures2d
 %{_libdir}/libopencv_xfeatures2d.so
-%{_libdir}/libopencv_xfeatures2d.so.%{abiver}
-%{_libdir}/libopencv_xfeatures2d.so.%{abiver}.*
+%{_libdir}/libopencv_xfeatures2d.so.%{abiver}*
 
 %files xfeatures2d-devel
 %{_includedir}/opencv2/xfeatures2d.hpp
 %{_includedir}/opencv2/xfeatures2d/cuda.hpp
 %{_includedir}/opencv2/xfeatures2d/nonfree.hpp
+
+%files static
+%{_libdir}/OpenCV/3rdparty/lib64/libcorrespondence.a
+%{_libdir}/OpenCV/3rdparty/lib64/libmultiview.a
+%{_libdir}/OpenCV/3rdparty/lib64/libnumeric.a
+%{_libdir}/OpenCV/3rdparty/lib64/libsimple_pipeline.a
 
 
 %changelog
