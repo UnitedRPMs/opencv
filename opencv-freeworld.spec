@@ -50,6 +50,7 @@ BuildRequires:  pkgconfig(zlib)
 BuildRequires:  pkgconfig(libglog)
 BuildRequires:	gflags-devel
 BuildRequires:	ceres-solver-devel
+BuildRequires:	fdupes
 
 %if %{with qt5}
 BuildRequires:  pkgconfig(Qt5Concurrent) >= 5.2.0
@@ -238,6 +239,15 @@ pushd build
 %make_install VERBOSE=0
 popd
 
+mkdir -p %{buildroot}%{_docdir}/%{name}-doc
+mv %{buildroot}%{_datadir}/OpenCV/samples %{buildroot}%{_docdir}/%{name}-doc/examples
+
+# Fix rpmlint warning "doc-file-dependency"
+chmod 644 %{buildroot}%{_docdir}/%{name}-doc/examples/python/*.py
+
+%fdupes -s %{buildroot}%{_docdir}/%{name}-doc/examples
+%fdupes -s %{buildroot}%{_includedir}
+
 find %{buildroot} -name '*.la' -delete
 
 
@@ -286,8 +296,7 @@ find %{buildroot} -name '*.la' -delete
 %exclude %{_includedir}/opencv2/xfeatures2d/nonfree.hpp
 
 %files doc
-%{_datadir}/OpenCV/samples
-%{_datadir}/OpenCV/doc
+%{_docdir}/%{name}-doc/
 
 %files -n python2-%{name}
 %{python2_sitearch}/cv2.so
@@ -340,4 +349,3 @@ find %{buildroot} -name '*.la' -delete
 
 * Thu Jun 07 2018 David Vásquez <davidva AT tuta DOT io> - 3.4.1-3
 - Initial build
-

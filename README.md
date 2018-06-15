@@ -1,7 +1,7 @@
 # opencv-freeworld
 
-[![CircleCI](https://circleci.com/gh/UnitedRPMs/opencv-freeworld.svg?style=svg)](https://circleci.com/gh/UnitedRPMs/opencv-freeworld)
+[![Run Status](https://api.shippable.com/projects/58e99ab064421007001c6c15/badge?branch=master)](https://app.shippable.com/github/UnitedRPMs/opencv-freeworld)
 
-freeworld contrib.
+Complete opencv
 
 
