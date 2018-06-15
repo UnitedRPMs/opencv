@@ -65,6 +65,8 @@ BuildRequires:  pkgconfig(QtOpenGL)
 BuildRequires:  pkgconfig(QtTest)
 %endif
 
+BuildRequires:  python2-devel
+BuildRequires:  python2-numpy
 BuildRequires:  python3-devel
 BuildRequires:  python3-numpy
 BuildRequires:  swig >= 1.3.24
