@@ -19,13 +19,11 @@ Source2:	https://raw.githubusercontent.com/opencv/opencv_3rdparty/dfe3162c237af2
 
 # Patches from Fedora
 Patch:		opencv-3.4.1-cmake_paths.patch
-Patch3:		opencv-3.4.1-cmake_va_intel_fix.patch
+Patch1:		opencv-3.4.1-cmake_va_intel_fix.patch
 
 # Thanks openSuse
-Patch1:		opencv-3.2.0-gcc-6.0.patch
-Patch2:		opencv-3.4.1-compilation-C-mode.patch
-
-Patch4:		static_path.patch
+Patch2:		opencv-3.2.0-gcc-6.0.patch
+Patch3:		opencv-3.4.1-compilation-C-mode.patch
 
 BuildRequires:  libtool
 BuildRequires:  cmake 
