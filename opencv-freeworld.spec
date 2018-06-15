@@ -51,6 +51,7 @@ BuildRequires:  pkgconfig(libglog)
 BuildRequires:	gflags-devel
 BuildRequires:	ceres-solver-devel
 BuildRequires:	fdupes
+BuildRequires:  hdf5-devel
 
 %if %{with qt5}
 BuildRequires:  pkgconfig(Qt5Concurrent) >= 5.2.0
