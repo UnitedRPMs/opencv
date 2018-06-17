@@ -9,7 +9,7 @@
 
 Name:           opencv-freeworld
 Version:        3.4.1
-Release:        3%{?dist}
+Release:        7%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
 Url:            http://opencv.org
@@ -366,5 +366,5 @@ find %{buildroot} -name '*.la' -delete
 
 %changelog
 
-* Thu Jun 07 2018 David Vásquez <davidva AT tuta DOT io> - 3.4.1-3
+* Thu Jun 07 2018 David Vásquez <davidva AT tuta DOT io> - 3.4.1-7
 - Initial build
