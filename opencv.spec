@@ -3,39 +3,40 @@
 # 2. https://src.fedoraproject.org/rpms/opencv
 # 3. https://build.opensuse.org/package/show/openSUSE%3AFactory/opencv
 
-%global abiver  3.4
+%global abiver 3.4
 %bcond_without qt5
+%bcond_without freeworld
 %bcond_with cuda
 
-Name:           opencv-freeworld
+Name:           opencv
 Version:        3.4.1
 Release:        7%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
 Url:            http://opencv.org
 Source0:        https://github.com/opencv/opencv/archive/%{version}.zip
-Source1:	https://github.com/opencv/opencv_contrib/archive/%{version}.tar.gz
-Source2:	https://raw.githubusercontent.com/opencv/opencv_3rdparty/dfe3162c237af211e98b8960018b564bc209261d/ippicv/ippicv_2017u3_lnx_intel64_general_20170822.tgz
+Source1:        https://github.com/opencv/opencv_contrib/archive/%{version}.tar.gz
+Source2:        https://raw.githubusercontent.com/opencv/opencv_3rdparty/dfe3162c237af211e98b8960018b564bc209261d/ippicv/ippicv_2017u3_lnx_intel64_general_20170822.tgz
 
 # Patches from Fedora
-Patch:		opencv-3.4.1-cmake_paths.patch
-Patch1:		opencv-3.4.1-cmake_va_intel_fix.patch
+Patch:          opencv-3.4.1-cmake_paths.patch
+Patch1:         opencv-3.4.1-cmake_va_intel_fix.patch
 
 # Thanks openSuse
-Patch2:		opencv-3.2.0-gcc-6.0.patch
-Patch3:		opencv-3.4.1-compilation-C-mode.patch
+Patch2:         opencv-3.2.0-gcc-6.0.patch
+Patch3:         opencv-3.4.1-compilation-C-mode.patch
 
 BuildRequires:  libtool
 BuildRequires:  cmake 
 BuildRequires:  gtk3-devel
-BuildRequires:	libwebp-devel
+BuildRequires:  libwebp-devel
 BuildRequires:  chrpath
 BuildRequires:  eigen3-devel
 BuildRequires:  jasper-devel
 BuildRequires:  libjpeg-devel
 BuildRequires:  tbb-devel
-BuildRequires:	unzip 
-BuildRequires:	ccache
+BuildRequires:  unzip 
+BuildRequires:  ccache
 
 BuildRequires:  pkgconfig(IlmBase)
 BuildRequires:  pkgconfig(OpenEXR)
@@ -48,9 +49,9 @@ BuildRequires:  pkgconfig(libv4l2)
 BuildRequires:  pkgconfig(libv4lconvert)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  pkgconfig(libglog)
-BuildRequires:	gflags-devel
-BuildRequires:	ceres-solver-devel
-BuildRequires:	fdupes
+BuildRequires:  gflags-devel
+BuildRequires:  ceres-solver-devel
+BuildRequires:  fdupes
 BuildRequires:  hdf5-devel
 
 %if %{with qt5}
@@ -71,15 +72,16 @@ BuildRequires:  python2-numpy
 BuildRequires:  python3-devel
 BuildRequires:  python3-numpy
 BuildRequires:  swig >= 1.3.24
+%if %{with freeworld}
 BuildRequires:  ffmpeg-devel 
 BuildRequires:  xine-lib-devel
+%endif
 %if %{with cuda}
 BuildRequires:  cuda
 %endif
 BuildRequires:  openblas-devel
 
-BuildRequires:	gcc, gcc-c++
-Provides:	opencv = %{version}-%{release}
+BuildRequires:  gcc, gcc-c++
 
 %description
 OpenCV means Intel® Open Source Computer Vision Library. It is a collection of
@@ -89,8 +91,7 @@ and Computer Vision algorithms.
 
 %package        core
 Summary:        OpenCV core libraries
-Provides:	opencv-core = %{version}-%{release}
-Recommends:	%{name}-xfeatures2d = %{version}-%{release}
+Recommends:     %{name}-xfeatures2d = %{version}-%{release}
 
 %description    core
 This package contains the OpenCV C/C++ core libraries.
@@ -98,10 +99,9 @@ This package contains the OpenCV C/C++ core libraries.
 
 %package        devel
 Summary:        Development files for using the OpenCV library
-Provides:	opencv-devel = %{version}-%{release}
 Requires:       %{name}%{_isa} = %{version}-%{release}
 Requires:       %{name}-contrib%{_isa} = %{version}-%{release}
-Recommends:	%{name}-static = %{version}-%{release}
+Recommends:     %{name}-static = %{version}-%{release}
 
 %description    devel
 This package contains the OpenCV C/C++ library and header files, as well as
@@ -115,7 +115,6 @@ Summary:        docs files
 Requires:       %{name}-devel = %{version}-%{release}
 BuildArch:      noarch
 Provides:       %{name}-devel-docs = %{version}-%{release}
-Provides:	opencv-doc = %{version}-%{release}
 Obsoletes:      %{name}-devel-docs < %{version}-%{release}
 
 %description    doc
@@ -130,7 +129,6 @@ Requires:       python2-numpy
 # Remove before F30
 Provides:       %{name}-python = %{version}-%{release}
 Provides:       %{name}-python%{?_isa} = %{version}-%{release}
-Provides:	python2-opencv = %{version}-%{release}
 Obsoletes:      %{name}-python < %{version}-%{release}
 
 %description    -n python2-%{name}
@@ -145,7 +143,6 @@ Requires:       python3-numpy
 # Remove before F30
 Provides:       %{name}-python3 = %{version}-%{release}
 Provides:       %{name}-python3%{?_isa} = %{version}-%{release}
-Provides:	python3-opencv = %{version}-%{release}
 Obsoletes:      %{name}-python3 < %{version}-%{release}
 
 %description    -n python3-%{name}
@@ -154,8 +151,7 @@ This package contains Python3 bindings for the OpenCV library.
 
 %package        contrib
 Summary:        OpenCV contributed functionality
-Provides:	opencv-contrib = %{version}-%{release}
-Recommends:	%{name}-xfeatures2d-devel = %{version}-%{release}
+Recommends:     %{name}-xfeatures2d-devel = %{version}-%{release}
 
 %description    contrib
 This package is intended for development of so-called "extra" modules, contributed
@@ -164,7 +160,7 @@ well-tested. Thus, they shouldn't be released as a part of official OpenCV
 distribution, since the library maintains binary compatibility, and tries
 to provide decent performance and stability.
 
-
+%if %{with freeworld}
 %package        xfeatures2d
 Summary:        xfeatures2d contrib
 
@@ -173,7 +169,7 @@ xfeatures2d contrib.
 
 %package        xfeatures2d-devel
 Summary:        Development files for using the OpenCV library
-Requires:	%{name}-xfeatures2d = %{version}-%{release}
+Requires:       %{name}-xfeatures2d = %{version}-%{release}
 
 %description    xfeatures2d-devel
 This package contains the OpenCV C/C++ library and header files. It should be installed if you want to develop programs that
@@ -186,7 +182,7 @@ Summary:        Development static libs for OpenCV
 %description    static
 This package contains the OpenCV C/C++ static library. It should be installed if you want to develop programs that
 will use the static OpenCV library.
-
+%endif
 
 %prep
 %setup -n opencv-%{version} -a 1
@@ -195,18 +191,19 @@ will use the static OpenCV library.
 %patch2 -p1
 %patch3 -p1
 
+%if %{with freeworld}
 ipp_file=%{S:2} 
 ipp_dir=.cache/ippicv                           
 
 mkdir -p $ipp_dir &&
 cp -f %{S:2} $ipp_dir/
-
+%endif
 
 %build
 mkdir -p build
 pushd build
 
-%cmake -DWITH_OPENCL=ON	               \
+%cmake -DWITH_OPENCL=ON                \
       -DWITH_OPENGL=ON	               \
       -DWITH_GSTREAMER=OFF             \
       -DBUILD_WITH_DEBUG_INFO=OFF      \
@@ -218,7 +215,13 @@ pushd build
 %if %{with qt5}
       -DWITH_QT=ON                     \
 %endif
+%if %{with freeworld}
       -DWITH_XINE=ON                   \
+%else
+      -DWITH_IPP=OFF                   \
+      -DWITH_XINE=OFF                  \
+      -DWITH_FFMPEG=OFF                \
+%endif
       -DBUILD_DOCS=ON                  \
       -DINSTALL_C_EXAMPLES=ON          \
       -DINSTALL_PYTHON_EXAMPLES=ON     \
@@ -348,6 +351,7 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/libopencv_xobjdetect.so.%{abiver}*
 %{_libdir}/libopencv_xphoto.so.%{abiver}*
 
+%if %{with freeworld}
 %files xfeatures2d
 %{_libdir}/libopencv_xfeatures2d.so
 %{_libdir}/libopencv_xfeatures2d.so.%{abiver}*
@@ -362,7 +366,7 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/OpenCV/3rdparty/lib64/libmultiview.a
 %{_libdir}/OpenCV/3rdparty/lib64/libnumeric.a
 %{_libdir}/OpenCV/3rdparty/lib64/libsimple_pipeline.a
-
+%endif
 
 %changelog
 
