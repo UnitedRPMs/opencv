@@ -1,12 +1,10 @@
---- a/CMakeLists.txt	2018-02-23 02:38:33.000000000 -0600
-+++ b/CMakeLists-new.txt	2018-06-15 16:19:41.574630555 -0600
-@@ -439,19 +439,14 @@
+--- a/CMakeLists.txt	2016-12-23 06:54:44.000000000 -0600
++++ b/CMakeLists-1.txt	2018-06-20 10:13:56.384075543 -0600
+@@ -396,18 +396,13 @@
      ocv_update(OPENCV_CONFIG_INSTALL_PATH  ".")
    else()
-     include(GNUInstallDirs)
--    ocv_update(OPENCV_LIB_INSTALL_PATH     ${CMAKE_INSTALL_LIBDIR}${LIB_SUFFIX})
+     ocv_update(OPENCV_LIB_INSTALL_PATH     lib${LIB_SUFFIX})
 -    ocv_update(OPENCV_3P_LIB_INSTALL_PATH  share/OpenCV/3rdparty/${OPENCV_LIB_INSTALL_PATH})
-+    ocv_update(OPENCV_LIB_INSTALL_PATH     ${CMAKE_INSTALL_LIBDIR})
 +    ocv_update(OPENCV_3P_LIB_INSTALL_PATH  ${OPENCV_LIB_INSTALL_PATH}/OpenCV/3rdparty/${OPENCV_LIB_INSTALL_PATH})
      ocv_update(OPENCV_SAMPLES_SRC_INSTALL_PATH    share/OpenCV/samples)
      ocv_update(OPENCV_JAR_INSTALL_PATH share/OpenCV/java)
@@ -15,11 +13,11 @@
      if(NOT DEFINED OPENCV_CONFIG_INSTALL_PATH)
 -      math(EXPR SIZEOF_VOID_P_BITS "8 * ${CMAKE_SIZEOF_VOID_P}")
 -      if(LIB_SUFFIX AND NOT SIZEOF_VOID_P_BITS EQUAL LIB_SUFFIX)
--        ocv_update(OPENCV_CONFIG_INSTALL_PATH ${CMAKE_INSTALL_LIBDIR}${LIB_SUFFIX}/cmake/opencv)
+-        ocv_update(OPENCV_CONFIG_INSTALL_PATH lib${LIB_SUFFIX}/cmake/opencv)
 -      else()
 -        ocv_update(OPENCV_CONFIG_INSTALL_PATH share/OpenCV)
 -      endif()
-+      ocv_update(OPENCV_CONFIG_INSTALL_PATH lib${LIB_SUFFIX}/OpenCV)
++     ocv_update(OPENCV_CONFIG_INSTALL_PATH lib${LIB_SUFFIX}/OpenCV)
      endif()
    endif()
    ocv_update(OPENCV_INCLUDE_INSTALL_PATH "include")

@@ -1,0 +1,73 @@
+--- a/cmake/OpenCVCompilerOptions.cmake	2016-12-23 06:54:44.000000000 -0600
++++ b/cmake/OpenCVCompilerOptions-1.cmake	2018-06-21 15:28:38.803741974 -0600
+@@ -164,8 +164,6 @@
+   # Other optimizations
+   if(ENABLE_OMIT_FRAME_POINTER)
+     add_extra_compiler_option(-fomit-frame-pointer)
+-  else()
+-    add_extra_compiler_option(-fno-omit-frame-pointer)
+   endif()
+   if(ENABLE_FAST_MATH)
+     add_extra_compiler_option(-ffast-math)
+@@ -178,8 +176,6 @@
+   endif()
+   if(ENABLE_SSE2)
+     add_extra_compiler_option(-msse2)
+-  elseif(X86 OR X86_64)
+-    add_extra_compiler_option(-mno-sse2)
+   endif()
+   if(ARM)
+     add_extra_compiler_option("-mfp16-format=ieee")
+@@ -195,8 +191,6 @@
+   if(NOT MINGW)
+     if(ENABLE_AVX)
+       add_extra_compiler_option(-mavx)
+-    elseif(X86 OR X86_64)
+-      add_extra_compiler_option(-mno-avx)
+     endif()
+     if(ENABLE_AVX2)
+       add_extra_compiler_option(-mavx2)
+@@ -210,26 +204,18 @@
+     if(NOT OPENCV_EXTRA_CXX_FLAGS MATCHES "-mavx")
+       if(ENABLE_SSE3)
+         add_extra_compiler_option(-msse3)
+-      elseif(X86 OR X86_64)
+-        add_extra_compiler_option(-mno-sse3)
+       endif()
+ 
+       if(ENABLE_SSSE3)
+         add_extra_compiler_option(-mssse3)
+-      elseif(X86 OR X86_64)
+-        add_extra_compiler_option(-mno-ssse3)
+       endif()
+ 
+       if(ENABLE_SSE41)
+         add_extra_compiler_option(-msse4.1)
+-      elseif(X86 OR X86_64)
+-        add_extra_compiler_option(-mno-sse4.1)
+       endif()
+ 
+       if(ENABLE_SSE42)
+         add_extra_compiler_option(-msse4.2)
+-      elseif(X86 OR X86_64)
+-        add_extra_compiler_option(-mno-sse4.2)
+       endif()
+ 
+       if(ENABLE_POPCNT)
+@@ -238,16 +224,6 @@
+     endif()
+   endif(NOT MINGW)
+ 
+-  if(X86 OR X86_64)
+-    if(NOT APPLE AND CMAKE_SIZEOF_VOID_P EQUAL 4)
+-      if(OPENCV_EXTRA_CXX_FLAGS MATCHES "-m(sse2|avx)")
+-        add_extra_compiler_option(-mfpmath=sse)# !! important - be on the same wave with x64 compilers
+-      else()
+-        add_extra_compiler_option(-mfpmath=387)
+-      endif()
+-    endif()
+-  endif()
+-
+   # Profiling?
+   if(ENABLE_PROFILING)
+     add_extra_compiler_option("-pg -g")

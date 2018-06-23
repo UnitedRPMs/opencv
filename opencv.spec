@@ -2,29 +2,32 @@
 # 1. http://www.linuxfromscratch.org/blfs/view/svn/general/opencv.html
 # 2. https://src.fedoraproject.org/rpms/opencv
 # 3. https://build.opensuse.org/package/show/openSUSE%3AFactory/opencv
+# 4. https://packages.gentoo.org/packages/media-libs/opencv
 
-%global abiver 3.4
+%global abiver 3.2
 %bcond_without qt5
 %bcond_without freeworld
 %bcond_with cuda
+%bcond_without dnn
+%bcond_without ffmpeg3
 
 Name:           opencv
-Version:        3.4.1
-Release:        7%{?dist}
+Version:        3.2.0
+Release:        20%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
 Url:            http://opencv.org
 Source0:        https://github.com/opencv/opencv/archive/%{version}.zip
-Source1:        https://github.com/opencv/opencv_contrib/archive/%{version}.tar.gz
-Source2:        https://raw.githubusercontent.com/opencv/opencv_3rdparty/dfe3162c237af211e98b8960018b564bc209261d/ippicv/ippicv_2017u3_lnx_intel64_general_20170822.tgz
+Source1:        https://github.com/opencv/opencv_contrib/archive/%{version}.tar.gz  
+# Thanks Gentoo
+Patch:          opencv-3.0.0-gles.patch
+Patch1:         opencv-3.1.0-find-libraries-fix.patch
+Patch2:         opencv-3.2.0-vtk.patch
+Patch3:		opencv-3.2.0-gcc-6.0.patch
+# Our updated patches
+Patch4:         opencv-3.2.0-fix_ussage_cpu_instructions.patch
+Patch5:         opencv-3.2.0-cmake_paths.patch
 
-# Patches from Fedora
-Patch:          opencv-3.4.1-cmake_paths.patch
-Patch1:         opencv-3.4.1-cmake_va_intel_fix.patch
-
-# Thanks openSuse
-Patch2:         opencv-3.2.0-gcc-6.0.patch
-Patch3:         opencv-3.4.1-compilation-C-mode.patch
 
 BuildRequires:  libtool
 BuildRequires:  cmake 
@@ -50,9 +53,13 @@ BuildRequires:  pkgconfig(libv4lconvert)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  pkgconfig(libglog)
 BuildRequires:  gflags-devel
+BuildRequires:  SFML-devel
 BuildRequires:  ceres-solver-devel
 BuildRequires:  fdupes
 BuildRequires:  hdf5-devel
+BuildRequires:	valgrind-devel
+BuildRequires:	lapack-devel
+BuildRequires:	hfsplus-tools
 
 %if %{with qt5}
 BuildRequires:  pkgconfig(Qt5Concurrent) >= 5.2.0
@@ -73,7 +80,11 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-numpy
 BuildRequires:  swig >= 1.3.24
 %if %{with freeworld}
+%if %{with ffmpeg3}
+BuildRequires:  ffmpeg3-devel 
+%else
 BuildRequires:  ffmpeg-devel 
+%endif
 BuildRequires:  xine-lib-devel
 %endif
 %if %{with cuda}
@@ -186,22 +197,19 @@ will use the static OpenCV library.
 
 %prep
 %setup -n opencv-%{version} -a 1
+
 %patch -p1
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
+%patch5 -p1
 
-%if %{with freeworld}
-ipp_file=%{S:2} 
-ipp_dir=.cache/ippicv                           
-
-mkdir -p $ipp_dir &&
-cp -f %{S:2} $ipp_dir/
-%endif
 
 %build
 mkdir -p build
 pushd build
+
 
 %cmake -DWITH_OPENCL=ON                \
       -DWITH_OPENGL=ON	               \
@@ -212,11 +220,28 @@ pushd build
       -DCMAKE_BUILD_TYPE=Release       \
       -DENABLE_CXX11=ON                \
       -DBUILD_PERF_TESTS=OFF           \
+      -DENABLE_NEON=OFF                \
+      -DBUILD_opencv_hdf=ON            \
+%if %{with dnn}
+      -DBUILD_opencv_dnn=ON            \
+      -DBUILD_opencv_dnns_easily_fooled=ON    \
+      -DBUILD_opencv_dnn_objdetect=ON  \
+%else
+      -DBUILD_opencv_dnn=OFF           \
+      -DBUILD_opencv_dnns_easily_fooled=OFF   \
+      -DBUILD_opencv_dnn_objdetect=OFF \
+%endif
+      -DWITH_TBB=ON                    \
 %if %{with qt5}
       -DWITH_QT=ON                     \
 %endif
 %if %{with freeworld}
       -DWITH_XINE=ON                   \
+      -DWITH_IPP=ON                    \
+%if %{with ffmpeg3}
+      -FFMPEG_PATH='/usr/bin/ffmpeg3/ffmpeg'   \
+      -FFPROBE_PATH='/usr/bin/ffmpeg3/ffprobe' \
+%endif
 %else
       -DWITH_IPP=OFF                   \
       -DWITH_XINE=OFF                  \
@@ -228,6 +253,7 @@ pushd build
       -DENABLE_PRECOMPILED_HEADERS=OFF \
       -DCMAKE_SKIP_RPATH=ON            \
       -DBUILD_WITH_DEBUG_INFO=OFF      \
+      -DCMAKE_VERBOSE_MAKEFILE=OFF     \
 %if %{with cuda}
       -DWITH_CUDA=ON                   \
 %endif
@@ -239,10 +265,6 @@ pushd build
       -DCPU_DISPATCH=SSE,SSE2,SSE3     \
 %endif
       -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib-%{version}/modules \
-%ifarch aarch64
-      -DCPU_BASELINE=NEON              \
-      -DCPU_DISPATCH=FP16              \
-%endif
       -Wno-dev  ..
 
 %make_build VERBOSE=0
@@ -259,6 +281,8 @@ mv %{buildroot}%{_datadir}/OpenCV/samples %{buildroot}%{_docdir}/%{name}-doc/exa
 
 # Fix rpmlint warning "doc-file-dependency"
 chmod 644 %{buildroot}%{_docdir}/%{name}-doc/examples/python/*.py
+
+cp -n platforms/scripts/valgrind* %{buildroot}/%{_datadir}/OpenCV/
 
 %fdupes -s %{buildroot}%{_docdir}/%{name}-doc/examples
 %fdupes -s %{buildroot}%{_includedir}
@@ -284,7 +308,6 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/libopencv_core.so.%{abiver}*
 %{_libdir}/libopencv_cvv.so.%{abiver}*
 %{_libdir}/libopencv_flann.so.%{abiver}*
-%{_libdir}/libopencv_hfs.so.%{abiver}*
 %{_libdir}/libopencv_highgui.so.%{abiver}*
 %{_libdir}/libopencv_imgcodecs.so.%{abiver}*
 %{_libdir}/libopencv_imgproc.so.%{abiver}*
@@ -299,7 +322,6 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/libopencv_videostab.so.%{abiver}*
 %{_libdir}/libopencv_sfm.so.%{abiver}*
 %exclude %{_libdir}/libopencv_xfeatures2d.so.%{abiver}*
-%{_libdir}/libopencv_dnn_objdetect.so.%{abiver}*
 %{_libdir}/libopencv_features2d.so.%{abiver}*
 
 %files devel
@@ -334,7 +356,6 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/libopencv_freetype.so.%{abiver}*
 %{_libdir}/libopencv_fuzzy.so.%{abiver}*
 %{_libdir}/libopencv_hdf.so.%{abiver}*
-%{_libdir}/libopencv_img_hash.so.%{abiver}*
 %{_libdir}/libopencv_line_descriptor.so.%{abiver}*
 %{_libdir}/libopencv_optflow.so.%{abiver}*
 %{_libdir}/libopencv_phase_unwrapping.so.%{abiver}*
@@ -370,5 +391,5 @@ find %{buildroot} -name '*.la' -delete
 
 %changelog
 
-* Thu Jun 07 2018 David Vásquez <davidva AT tuta DOT io> - 3.4.1-7
+* Thu Jun 07 2018 David Vásquez <davidva AT tuta DOT io> - 3.2.0-20
 - Initial build
