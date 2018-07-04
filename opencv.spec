@@ -10,7 +10,7 @@
 
 Name:           opencv
 Version:        3.4.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
 Url:            http://opencv.org
@@ -369,6 +369,9 @@ find %{buildroot} -name '*.la' -delete
 %endif
 
 %changelog
+
+* Wed Jul 04 2018 David Vásquez <davidva AT tuta DOT io> - 3.4.1-8
+- Rebuilt for python3.7
 
 * Thu Jun 07 2018 David Vásquez <davidva AT tuta DOT io> - 3.4.1-7
 - Initial build
