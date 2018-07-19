@@ -21,10 +21,11 @@ Source2:        https://raw.githubusercontent.com/opencv/opencv_3rdparty/dfe3162
 # Patches from Fedora
 Patch:          opencv-3.4.1-cmake_paths.patch
 Patch1:         opencv-3.4.1-cmake_va_intel_fix.patch
+Patch2:		opencv-3.4.1-python37.patch
 
 # Thanks openSuse
-Patch2:         opencv-3.2.0-gcc-6.0.patch
-Patch3:         opencv-3.4.1-compilation-C-mode.patch
+Patch3:         opencv-3.2.0-gcc-6.0.patch
+Patch4:         opencv-3.4.1-compilation-C-mode.patch
 
 BuildRequires:  libtool
 BuildRequires:  cmake 
@@ -185,11 +186,7 @@ will use the static OpenCV library.
 %endif
 
 %prep
-%setup -n opencv-%{version} -a 1
-%patch -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
+%autosetup -n opencv-%{version} -a 1 -p1
 
 %if %{with freeworld}
 ipp_file=%{S:2} 
@@ -230,19 +227,18 @@ pushd build
       -DBUILD_WITH_DEBUG_INFO=OFF      \
 %if %{with cuda}
       -DWITH_CUDA=ON                   \
+%else
+      -DWITH_CUDA=OFF                  \
 %endif
 %ifarch x86_64
-      -DCPU_BASELINE=SSE2              \
-      -DCPU_DISPATCH=SSE3,SSE4_1,SSE4_2,AVX,FP16,AVX2 \
+      -DCPU_BASELINE_DISABLE=SSE3      \
+      -DCPU_BASELINE_REQUIRE=SSE2      \
 %else
       -DCPU_BASELINE_DISABLE=SSE       \
       -DCPU_DISPATCH=SSE,SSE2,SSE3     \
 %endif
       -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib-%{version}/modules \
-%ifarch aarch64
-      -DCPU_BASELINE=NEON              \
-      -DCPU_DISPATCH=FP16              \
-%endif
+      -DVERBOSE=0 \
       -Wno-dev  ..
 
 %make_build VERBOSE=0
