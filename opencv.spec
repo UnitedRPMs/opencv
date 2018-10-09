@@ -9,24 +9,19 @@
 %bcond_with cuda
 
 Name:           opencv
-Version:        3.4.1
-Release:        8%{?dist}
+Version:        3.4.3
+Release:        7%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
 Url:            http://opencv.org
-Source0:        https://github.com/opencv/opencv/archive/%{version}.zip
+Source0:	https://github.com/opencv/opencv/archive/%{version}.zip
 Source1:        https://github.com/opencv/opencv_contrib/archive/%{version}.tar.gz
-Source2:        https://raw.githubusercontent.com/opencv/opencv_3rdparty/dfe3162c237af211e98b8960018b564bc209261d/ippicv/ippicv_2017u3_lnx_intel64_general_20170822.tgz
+Source2:        https://raw.githubusercontent.com/opencv/opencv_3rdparty/bdb7bb85f34a8cb0d35e40a81f58da431aa1557a/ippicv/ippicv_2017u3_lnx_intel64_general_20180518.tgz
 
 # Patches from Fedora
-Patch:          opencv-3.4.1-cmake_paths.patch
-Patch1:         opencv-3.4.1-cmake_va_intel_fix.patch
-Patch2:		opencv-3.4.1-python37.patch
+Patch:         opencv-3.4.1-cmake_paths.patch
 
-# Thanks openSuse
-Patch3:         opencv-3.2.0-gcc-6.0.patch
-Patch4:         opencv-3.4.1-compilation-C-mode.patch
-
+BuildRequires:	clang
 BuildRequires:  libtool
 BuildRequires:  cmake 
 BuildRequires:  gtk3-devel
@@ -197,6 +192,10 @@ cp -f %{S:2} $ipp_dir/
 %endif
 
 %build
+
+export CC=clang
+export CXX=clang++
+
 mkdir -p build
 pushd build
 
@@ -238,6 +237,7 @@ pushd build
       -DCPU_DISPATCH=SSE,SSE2,SSE3     \
 %endif
       -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib-%{version}/modules \
+      -DOpenGL_GL_PREFERENCE=GLVND     \
       -DVERBOSE=0 \
       -Wno-dev  ..
 
@@ -246,6 +246,10 @@ pushd build
 popd
 
 %install
+
+export CC=clang
+export CXX=clang++
+
 pushd build
 %make_install VERBOSE=0
 popd
@@ -261,6 +265,7 @@ chmod 644 %{buildroot}%{_docdir}/%{name}-doc/examples/python/*.py
 
 find %{buildroot} -name '*.la' -delete
 
+rm -rf %{buildroot}%{_datadir}/OpenCV/licenses/
 
 %ldconfig_scriptlets core
 
@@ -365,6 +370,10 @@ find %{buildroot} -name '*.la' -delete
 %endif
 
 %changelog
+
+* Sun Oct 07 2018 David Vásquez <davidva AT tuta DOT io> - 3.4.3-7
+- Updated to 3.4.3
+- Now we are using clang for a fast build
 
 * Wed Jul 04 2018 David Vásquez <davidva AT tuta DOT io> - 3.4.1-8
 - Rebuilt for python3.7
