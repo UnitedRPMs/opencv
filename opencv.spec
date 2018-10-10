@@ -3,10 +3,12 @@
 # 2. https://src.fedoraproject.org/rpms/opencv
 # 3. https://build.opensuse.org/package/show/openSUSE%3AFactory/opencv
 
+%global debug_package %{nil}
 %global abiver 3.4
 %bcond_without qt5
 %bcond_without freeworld
 %bcond_with cuda
+%bcond_with clang
 
 Name:           opencv
 Version:        3.4.3
@@ -19,9 +21,13 @@ Source1:        https://github.com/opencv/opencv_contrib/archive/%{version}.tar.
 Source2:        https://raw.githubusercontent.com/opencv/opencv_3rdparty/bdb7bb85f34a8cb0d35e40a81f58da431aa1557a/ippicv/ippicv_2017u3_lnx_intel64_general_20180518.tgz
 
 # Patches from Fedora
-Patch:         opencv-3.4.1-cmake_paths.patch
+Patch1:        opencv-3.4.1-cmake_paths.patch
+Patch10:       https://github.com/opencv/opencv/commit/4910f16f16a0a0c2b456b14cbc3429c86f96a5f5.patch
+Patch11:       https://github.com/opencv/opencv_contrib/commit/6a01e96ce795ed003cf83a777ba65d6dd2d8afce.patch
 
+%if %{with clang}
 BuildRequires:	clang
+%endif
 BuildRequires:  libtool
 BuildRequires:  cmake 
 BuildRequires:  gtk3-devel
@@ -181,7 +187,18 @@ will use the static OpenCV library.
 %endif
 
 %prep
-%autosetup -n opencv-%{version} -a 1 -p1
+%setup -n opencv-%{version} -a 1 
+
+%patch1 -p1 -b .cmake_paths
+
+%ifarch %{ix86} %{arm}
+%patch10 -p1 -R -b .revert_support_YV12_too
+%endif
+pushd %{name}_contrib-%{version}
+# missing dependecies for dnn_modern module in Fedora (tiny-dnn)
+#rm -r modules/dnn_modern/
+%patch11 -p1 -b .Add_missing_multi-line_separator
+popd
 
 %if %{with freeworld}
 ipp_file=%{S:2} 
@@ -193,13 +210,21 @@ cp -f %{S:2} $ipp_dir/
 
 %build
 
+%if %{with clang}
 export CC=clang
 export CXX=clang++
+%endif
 
 mkdir -p build
 pushd build
 
-%cmake -DWITH_OPENCL=ON                \
+# cmake macro fails build
+
+cmake -DCMAKE_INSTALL_PREFIX=/usr      \
+      -DLIB_INSTALL_DIR:PATH=%{_libdir} \
+      -DLIB_SUFFIX=64                  \
+      -DCMAKE_BUILD_TYPE=Release       \
+      -DWITH_OPENCL=ON                 \
       -DWITH_OPENGL=ON	               \
       -DWITH_GSTREAMER=OFF             \
       -DBUILD_WITH_DEBUG_INFO=OFF      \
@@ -247,8 +272,10 @@ popd
 
 %install
 
+%if %{with clang}
 export CC=clang
 export CXX=clang++
+%endif
 
 pushd build
 %make_install VERBOSE=0
@@ -373,7 +400,7 @@ rm -rf %{buildroot}%{_datadir}/OpenCV/licenses/
 
 * Sun Oct 07 2018 David Vásquez <davidva AT tuta DOT io> - 3.4.3-7
 - Updated to 3.4.3
-- Now we are using clang for a fast build
+- Conditional clang 
 
 * Wed Jul 04 2018 David Vásquez <davidva AT tuta DOT io> - 3.4.1-8
 - Rebuilt for python3.7
