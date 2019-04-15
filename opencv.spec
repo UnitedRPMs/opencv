@@ -11,19 +11,19 @@
 %bcond_with clang
 
 Name:           opencv
-Version:        3.4.3
+Version:        3.4.4
 Release:        7%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
 Url:            http://opencv.org
 Source0:	https://github.com/opencv/opencv/archive/%{version}.zip
 Source1:        https://github.com/opencv/opencv_contrib/archive/%{version}.tar.gz
-Source2:        https://raw.githubusercontent.com/opencv/opencv_3rdparty/bdb7bb85f34a8cb0d35e40a81f58da431aa1557a/ippicv/ippicv_2017u3_lnx_intel64_general_20180518.tgz
+Source2:        https://github.com/opencv/opencv_3rdparty/raw/ippicv/master_20180723/ippicv/ippicv_2019_lnx_intel64_general_20180723.tgz
 
 # Patches from Fedora
-Patch1:        opencv-3.4.1-cmake_paths.patch
-Patch10:       https://github.com/opencv/opencv/commit/4910f16f16a0a0c2b456b14cbc3429c86f96a5f5.patch
-Patch11:       https://github.com/opencv/opencv_contrib/commit/6a01e96ce795ed003cf83a777ba65d6dd2d8afce.patch
+Patch1:         opencv-3.4.1-cmake_paths.patch
+Patch11:        https://github.com/opencv/opencv_contrib/pull/1905/commits/c4419e4e65a8d9e0b5a15e9a5242453f261bee46.patch
+Patch12:        https://github.com/opencv/opencv/pull/13254/commits/ad35b79e3f98b4ce30481e0299cca550ed77aef0.patch
 
 %if %{with clang}
 BuildRequires:	clang
@@ -71,6 +71,7 @@ BuildRequires:  pkgconfig(QtTest)
 
 BuildRequires:  python2-devel
 BuildRequires:  python2-numpy
+BuildRequires:  python2-rpm-macros
 BuildRequires:  python3-devel
 BuildRequires:  python3-numpy
 BuildRequires:  swig >= 1.3.24
@@ -84,6 +85,9 @@ BuildRequires:  cuda
 BuildRequires:  openblas-devel
 
 BuildRequires:  gcc, gcc-c++
+%if 0%{?fedora} >= 29
+BuildRequires:	python-unversioned-command
+%endif
 
 %description
 OpenCV means Intel® Open Source Computer Vision Library. It is a collection of
@@ -191,14 +195,10 @@ will use the static OpenCV library.
 
 %patch1 -p1 -b .cmake_paths
 
-%ifarch %{ix86} %{arm}
-%patch10 -p1 -R -b .revert_support_YV12_too
-%endif
 pushd %{name}_contrib-%{version}
-# missing dependecies for dnn_modern module in Fedora (tiny-dnn)
-#rm -r modules/dnn_modern/
-%patch11 -p1 -b .Add_missing_multi-line_separator
+%patch11 -p1 -b .cvv_repair_build
 popd
+%patch12 -p1 -b .fix_install_of_python_bindings
 
 %if %{with freeworld}
 ipp_file=%{S:2} 
@@ -219,6 +219,7 @@ mkdir -p build
 pushd build
 
 # cmake macro fails build
+
 
 cmake -DCMAKE_INSTALL_PREFIX=/usr      \
       -DLIB_INSTALL_DIR:PATH=%{_libdir} \
@@ -248,7 +249,6 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr      \
       -DINSTALL_PYTHON_EXAMPLES=ON     \
       -DENABLE_PRECOMPILED_HEADERS=OFF \
       -DCMAKE_SKIP_RPATH=ON            \
-      -DBUILD_WITH_DEBUG_INFO=OFF      \
 %if %{with cuda}
       -DWITH_CUDA=ON                   \
 %else
@@ -264,7 +264,14 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr      \
       -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib-%{version}/modules \
       -DOpenGL_GL_PREFERENCE=GLVND     \
       -DVERBOSE=0 \
-      -Wno-dev  ..
+      -DPYTHON2_EXECUTABLE=%{__python2} \
+      -DPYTHON3_EXECUTABLE=%{__python3} \
+      -DPYTHON2_PACKAGES_PATH=%{python2_sitearch} \
+      -DPYTHON3_PACKAGES_PATH=%{python3_sitearch} \
+      -DOPENCV_PYTHON2_INSTALL_PATH=%{python2_sitearch} \
+      -DOPENCV_PYTHON3_INSTALL_PATH=%{python3_sitearch} \
+      -DOPENCV_SKIP_PYTHON_LOADER=ON \
+      -DOPENCV_ENABLE_NONFREE=ON ..
 
 %make_build VERBOSE=0
 
@@ -348,6 +355,7 @@ rm -rf %{buildroot}%{_datadir}/OpenCV/licenses/
 
 %files -n python3-%{name}
 %{python3_sitearch}/cv2.cpython-3*.so
+%{_bindir}/setup_vars_opencv3.sh
 
 %files contrib
 %{_libdir}/libopencv_aruco.so.%{abiver}*
@@ -397,6 +405,9 @@ rm -rf %{buildroot}%{_datadir}/OpenCV/licenses/
 %endif
 
 %changelog
+
+* Wed Apr 10 2019 David Vásquez <davidva AT tuta DOT io> - 3.4.4-7
+- Updated to 3.4.4-7
 
 * Sun Oct 07 2018 David Vásquez <davidva AT tuta DOT io> - 3.4.3-7
 - Updated to 3.4.3
