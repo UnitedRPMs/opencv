@@ -16,7 +16,7 @@ install: true
 
 # the build scripts
 script:
-- docker run --privileged=true --cap-add=SYS_ADMIN -v $(pwd)/29:/root/enjoy/ davidva/unibuild-29 /bin/sh -c "rm -f /urpms && wget -c https://raw.githubusercontent.com/kuboosoft/united-build/master/urpms && chmod a+x urpms && /urpms -g UnitedRPMs/opencv -s opencv.spec -r true -d 'dist .fc29' -u true"   
+- docker run --privileged=true --cap-add=SYS_ADMIN -v $(pwd)/31:/root/enjoy/ davidva/unibuild-31 /bin/sh -c "rm -f /urpms && wget -c https://raw.githubusercontent.com/kuboosoft/united-build/master/urpms && chmod a+x urpms && /urpms -g UnitedRPMs/opencv -s opencv.spec -r true -d 'dist .fc31' -u true"   
 
 notifications:
 slack: unitedrpms:lzDykHTpajKrgmGz9NkrO1Hj

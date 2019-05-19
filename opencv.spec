@@ -12,7 +12,7 @@
 
 Name:           opencv
 Version:        3.4.4
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
 Url:            http://opencv.org
@@ -105,8 +105,8 @@ This package contains the OpenCV C/C++ core libraries.
 
 %package        devel
 Summary:        Development files for using the OpenCV library
-Requires:       %{name}%{_isa} = %{version}-%{release}
-Requires:       %{name}-contrib%{_isa} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
+Requires:       %{name}-contrib = %{version}-%{release}
 Recommends:     %{name}-static = %{version}-%{release}
 
 %description    devel
@@ -129,7 +129,7 @@ This package contains the OpenCV documentation, samples and examples programs.
 
 %package        -n python2-%{name}
 Summary:        Python2 bindings for apps which use OpenCV
-Requires:       %{name}%{_isa} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 Requires:       python2-numpy
 %{?python_provide:%python_provide python2-%{srcname}}
 # Remove before F30
@@ -143,7 +143,7 @@ This package contains Python bindings for the OpenCV library.
 
 %package        -n python3-%{name}
 Summary:        Python3 bindings for apps which use OpenCV
-Requires:       %{name}%{_isa} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 Requires:       python3-numpy
 %{?python_provide:%python_provide python3-%{srcname}}
 # Remove before F30
@@ -405,6 +405,9 @@ rm -rf %{buildroot}%{_datadir}/OpenCV/licenses/
 %endif
 
 %changelog
+
+* Sat May 18 2019 David Vásquez <davidva AT tuta DOT io> - 3.4.4-8
+- Rebuilt for libHalf libIex libIlmImf libIlmThread libImath
 
 * Wed Apr 10 2019 David Vásquez <davidva AT tuta DOT io> - 3.4.4-7
 - Updated to 3.4.4-7
