@@ -292,7 +292,7 @@ rm -rf %{buildroot}%{_datadir}/OpenCV/licenses/
 
 %files core
 %{_libdir}/libopencv_core.so.%{abiver}*
-%{_libdir}/libopencv_cvv.so.%{abiver}*
+#{_libdir}/libopencv_cvv.so.{abiver}*
 %{_libdir}/libopencv_flann.so.%{abiver}*
 %{_libdir}/libopencv_hfs.so.%{abiver}*
 %{_libdir}/libopencv_highgui.so.%{abiver}*
@@ -314,7 +314,7 @@ rm -rf %{buildroot}%{_datadir}/OpenCV/licenses/
 %files devel
 %{_includedir}/opencv4
 %{_libdir}/lib*.so
-%{_libdir}/pkgconfig/opencv.pc
+%{_libdir}/pkgconfig/opencv4.pc
 %{_libdir}/cmake/opencv4/*.cmake
 %exclude %{_includedir}/opencv4/opencv2/xfeatures2d.hpp
 %exclude %{_includedir}/opencv4/opencv2/xfeatures2d/cuda.hpp
