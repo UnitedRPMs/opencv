@@ -4,26 +4,21 @@
 # 3. https://build.opensuse.org/package/show/openSUSE%3AFactory/opencv
 
 %global debug_package %{nil}
-%global abiver 3.4
+%global abiver 4.1
+%global javaver 410
 %bcond_without qt5
 %bcond_without freeworld
 %bcond_with cuda
 %bcond_with clang
 
 Name:           opencv
-Version:        3.4.4
-Release:        8%{?dist}
+Version:        4.1.0
+Release:        7%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
 Url:            http://opencv.org
 Source0:	https://github.com/opencv/opencv/archive/%{version}.zip
 Source1:        https://github.com/opencv/opencv_contrib/archive/%{version}.tar.gz
-Source2:        https://github.com/opencv/opencv_3rdparty/raw/ippicv/master_20180723/ippicv/ippicv_2019_lnx_intel64_general_20180723.tgz
-
-# Patches from Fedora
-Patch1:         opencv-3.4.1-cmake_paths.patch
-Patch11:        https://github.com/opencv/opencv_contrib/pull/1905/commits/c4419e4e65a8d9e0b5a15e9a5242453f261bee46.patch
-Patch12:        https://github.com/opencv/opencv/pull/13254/commits/ad35b79e3f98b4ce30481e0299cca550ed77aef0.patch
 
 %if %{with clang}
 BuildRequires:	clang
@@ -88,6 +83,12 @@ BuildRequires:  gcc, gcc-c++
 %if 0%{?fedora} >= 29
 BuildRequires:	python-unversioned-command
 %endif
+# java
+BuildRequires:  ant
+BuildRequires:  java-devel
+
+BuildRequires:	gstreamer1-plugins-base-devel
+BuildRequires:	tbb-devel
 
 %description
 OpenCV means Intel® Open Source Computer Vision Library. It is a collection of
@@ -133,9 +134,11 @@ Requires:       %{name} = %{version}-%{release}
 Requires:       python2-numpy
 %{?python_provide:%python_provide python2-%{srcname}}
 # Remove before F30
+%if 0%{?fedora} <= 30
 Provides:       %{name}-python = %{version}-%{release}
 Provides:       %{name}-python%{?_isa} = %{version}-%{release}
 Obsoletes:      %{name}-python < %{version}-%{release}
+%endif
 
 %description    -n python2-%{name}
 This package contains Python bindings for the OpenCV library.
@@ -190,29 +193,35 @@ This package contains the OpenCV C/C++ static library. It should be installed if
 will use the static OpenCV library.
 %endif
 
+%package 	java
+Summary:	Java bindings for apps which use OpenCV
+Requires:	java-headless
+Requires:	javapackages-filesystem
+Requires:	%{name}-core = %{version}-%{release}
+Provides:	libopencv_java.so%{?_isa} = %{version}-%{release}
+Obsoletes:	libopencv_java.so%{?_isa} < %{version}-%{release}
+ 
+%description 	java
+This package contains Java bindings for the OpenCV library.
+
 %prep
 %setup -n opencv-%{version} -a 1 
 
-%patch1 -p1 -b .cmake_paths
+# Necessary Modules 
+mv -f opencv_contrib-%{version}/modules/* modules/
+cp opencv_contrib-%{version}/LICENSE LICENSE.contrib
 
-pushd %{name}_contrib-%{version}
-%patch11 -p1 -b .cvv_repair_build
-popd
-%patch12 -p1 -b .fix_install_of_python_bindings
-
-%if %{with freeworld}
-ipp_file=%{S:2} 
-ipp_dir=.cache/ippicv                           
-
-mkdir -p $ipp_dir &&
-cp -f %{S:2} $ipp_dir/
-%endif
+# Remove Windows specific files
+rm -f doc/packaging.txt
 
 %build
 
 %if %{with clang}
 export CC=clang
 export CXX=clang++
+%else
+export CC=gcc 
+export CXX=g++
 %endif
 
 mkdir -p build
@@ -220,76 +229,42 @@ pushd build
 
 # cmake macro fails build
 
-
 cmake -DCMAKE_INSTALL_PREFIX=/usr      \
-      -DLIB_INSTALL_DIR:PATH=%{_libdir} \
-      -DLIB_SUFFIX=64                  \
-      -DCMAKE_BUILD_TYPE=Release       \
-      -DWITH_OPENCL=ON                 \
-      -DWITH_OPENGL=ON	               \
-      -DWITH_GSTREAMER=OFF             \
-      -DBUILD_WITH_DEBUG_INFO=OFF      \
-      -DBUILD_TESTS=OFF                \
-      -DBUILD_PERF_TESTS=OFF           \
       -DCMAKE_BUILD_TYPE=Release       \
       -DENABLE_CXX11=ON                \
       -DBUILD_PERF_TESTS=OFF           \
-%if %{with qt5}
-      -DWITH_QT=ON                     \
-%endif
-%if %{with freeworld}
       -DWITH_XINE=ON                   \
-%else
-      -DWITH_IPP=OFF                   \
-      -DWITH_XINE=OFF                  \
-      -DWITH_FFMPEG=OFF                \
-%endif
+      -DBUILD_TESTS=OFF                \
+      -DENABLE_PRECOMPILED_HEADERS=OFF \
+      -DCMAKE_SKIP_RPATH=ON            \
+      -DBUILD_WITH_DEBUG_INFO=OFF      \
+      -DOPENCV_GENERATE_PKGCONFIG=ON   \
       -DBUILD_DOCS=ON                  \
       -DINSTALL_C_EXAMPLES=ON          \
       -DINSTALL_PYTHON_EXAMPLES=ON     \
-      -DENABLE_PRECOMPILED_HEADERS=OFF \
-      -DCMAKE_SKIP_RPATH=ON            \
-%if %{with cuda}
-      -DWITH_CUDA=ON                   \
-%else
-      -DWITH_CUDA=OFF                  \
-%endif
-%ifarch x86_64
-      -DCPU_BASELINE_DISABLE=SSE3      \
-      -DCPU_BASELINE_REQUIRE=SSE2      \
-%else
-      -DCPU_BASELINE_DISABLE=SSE       \
-      -DCPU_DISPATCH=SSE,SSE2,SSE3     \
-%endif
-      -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib-%{version}/modules \
-      -DOpenGL_GL_PREFERENCE=GLVND     \
-      -DVERBOSE=0 \
-      -DPYTHON2_EXECUTABLE=%{__python2} \
-      -DPYTHON3_EXECUTABLE=%{__python3} \
-      -DPYTHON2_PACKAGES_PATH=%{python2_sitearch} \
-      -DPYTHON3_PACKAGES_PATH=%{python3_sitearch} \
-      -DOPENCV_PYTHON2_INSTALL_PATH=%{python2_sitearch} \
-      -DOPENCV_PYTHON3_INSTALL_PATH=%{python3_sitearch} \
-      -DOPENCV_SKIP_PYTHON_LOADER=ON \
-      -DOPENCV_ENABLE_NONFREE=ON ..
+      -DOPENCV_ENABLE_NONFREE=ON       \
+      -DBUILD_opencv_cvv=ON            \
+      -Wno-dev  ..
 
-%make_build VERBOSE=0
+make  VERBOSE=0
 
 popd
 
 %install
-
-%if %{with clang}
-export CC=clang
-export CXX=clang++
-%endif
 
 pushd build
 %make_install VERBOSE=0
 popd
 
 mkdir -p %{buildroot}%{_docdir}/%{name}-doc
-mv %{buildroot}%{_datadir}/OpenCV/samples %{buildroot}%{_docdir}/%{name}-doc/examples
+mv %{buildroot}/%{_datadir}/opencv4/samples %{buildroot}/%{_docdir}/%{name}-doc/examples
+
+# Java
+mv %{buildroot}/usr/share/java/opencv4/libopencv_java%{javaver}.so %{buildroot}/%{_libdir}
+ln -sf %{_libdir}/libopencv_java%{javaver}.so %{buildroot}/%{_libdir}/libopencv_java.so
+mkdir -p %{buildroot}/%{_jnidir}
+mv %{buildroot}/usr/share/java/opencv4/opencv-%{javaver}.jar %{buildroot}/%{_jnidir}/
+ln -sf %{_jnidir}/opencv-%{javaver}.jar %{buildroot}/%{_jnidir}/opencv.jar
 
 # Fix rpmlint warning "doc-file-dependency"
 chmod 644 %{buildroot}%{_docdir}/%{name}-doc/examples/python/*.py
@@ -310,10 +285,10 @@ rm -rf %{buildroot}%{_datadir}/OpenCV/licenses/
 %doc README.md
 %license LICENSE
 %{_bindir}/opencv_*
-%dir %{_datadir}/OpenCV
-%{_datadir}/OpenCV/haarcascades
-%{_datadir}/OpenCV/lbpcascades
-%{_datadir}/OpenCV/valgrind*
+%dir %{_datadir}/opencv4
+%{_datadir}/opencv4/haarcascades
+%{_datadir}/opencv4/lbpcascades
+%{_datadir}/opencv4/valgrind*
 
 %files core
 %{_libdir}/libopencv_core.so.%{abiver}*
@@ -333,19 +308,17 @@ rm -rf %{buildroot}%{_datadir}/OpenCV/licenses/
 %{_libdir}/libopencv_videoio.so.%{abiver}*
 %{_libdir}/libopencv_videostab.so.%{abiver}*
 %{_libdir}/libopencv_sfm.so.%{abiver}*
-%exclude %{_libdir}/libopencv_xfeatures2d.so.%{abiver}*
 %{_libdir}/libopencv_dnn_objdetect.so.%{abiver}*
 %{_libdir}/libopencv_features2d.so.%{abiver}*
 
 %files devel
-%{_includedir}/opencv
-%{_includedir}/opencv2
+%{_includedir}/opencv4
 %{_libdir}/lib*.so
 %{_libdir}/pkgconfig/opencv.pc
-%{_libdir}/OpenCV/*.cmake
-%exclude %{_includedir}/opencv2/xfeatures2d.hpp
-%exclude %{_includedir}/opencv2/xfeatures2d/cuda.hpp
-%exclude %{_includedir}/opencv2/xfeatures2d/nonfree.hpp
+%{_libdir}/cmake/opencv4/*.cmake
+%exclude %{_includedir}/opencv4/opencv2/xfeatures2d.hpp
+%exclude %{_includedir}/opencv4/opencv2/xfeatures2d/cuda.hpp
+%exclude %{_includedir}/opencv4/opencv2/xfeatures2d/nonfree.hpp
 
 %files doc
 %{_docdir}/%{name}-doc/
@@ -393,18 +366,30 @@ rm -rf %{buildroot}%{_datadir}/OpenCV/licenses/
 %{_libdir}/libopencv_xfeatures2d.so.%{abiver}*
 
 %files xfeatures2d-devel
-%{_includedir}/opencv2/xfeatures2d.hpp
-%{_includedir}/opencv2/xfeatures2d/cuda.hpp
-%{_includedir}/opencv2/xfeatures2d/nonfree.hpp
+%{_includedir}/opencv4/opencv2/xfeatures2d.hpp
+%{_includedir}/opencv4/opencv2/xfeatures2d/cuda.hpp
+%{_includedir}/opencv4/opencv2/xfeatures2d/nonfree.hpp
 
 %files static
-%{_libdir}/OpenCV/3rdparty/lib64/libcorrespondence.a
-%{_libdir}/OpenCV/3rdparty/lib64/libmultiview.a
-%{_libdir}/OpenCV/3rdparty/lib64/libnumeric.a
-%{_libdir}/OpenCV/3rdparty/lib64/libsimple_pipeline.a
+%{_libdir}/opencv4/3rdparty/%{_lib}/libcorrespondence.a
+%{_libdir}/opencv4/3rdparty/%{_lib}/libmultiview.a
+%{_libdir}/opencv4/3rdparty/%{_lib}/libnumeric.a
+%{_libdir}/opencv4/3rdparty/%{_lib}/libsimple_pipeline.a
 %endif
 
+%files java
+%{_libdir}/libopencv_java*.so
+%{_libdir}/libopencv_java.so
+%{_jnidir}/opencv-*.jar
+%{_jnidir}/opencv.jar
+
 %changelog
+
+* Tue May 21 2019 David Vásquez <davidva AT tuta DOT io> - 4.1.0-7
+- Updated to 4.1.0-7
+
+* Mon May 20 2019 David Vásquez <davidva AT tuta DOT io> - 3.4.6-8
+- Updated to 3.4.6-8
 
 * Sat May 18 2019 David Vásquez <davidva AT tuta DOT io> - 3.4.4-8
 - Rebuilt for libHalf libIex libIlmImf libIlmThread libImath
