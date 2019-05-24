@@ -324,7 +324,7 @@ rm -rf %{buildroot}%{_datadir}/OpenCV/licenses/
 %{_docdir}/%{name}-doc/
 
 %files -n python2-%{name}
-%{python2_sitearch}/cv2.so
+%{python2_sitearch}/cv2*.so
 
 %files -n python3-%{name}
 %{python3_sitearch}/cv2.cpython-3*.so
