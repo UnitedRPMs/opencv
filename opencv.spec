@@ -286,6 +286,7 @@ rm -rf %{buildroot}%{_datadir}/OpenCV/licenses/
 %files
 %doc README.md
 %license LICENSE
+%{_datadir}/licenses/opencv4/
 %{_bindir}/opencv_*
 %dir %{_datadir}/opencv4
 %{_datadir}/opencv4/haarcascades
