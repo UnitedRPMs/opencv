@@ -361,6 +361,8 @@ rm -rf %{buildroot}%{_datadir}/OpenCV/licenses/
 %{_libdir}/libopencv_ximgproc.so.%{abiver}*
 %{_libdir}/libopencv_xobjdetect.so.%{abiver}*
 %{_libdir}/libopencv_xphoto.so.%{abiver}*
+%{_libdir}/libopencv_gapi.so.%{abiver}*
+%{_libdir}/libopencv_quality.so.%{abiver}*
 
 %if %{with freeworld}
 %files xfeatures2d
@@ -381,7 +383,6 @@ rm -rf %{buildroot}%{_datadir}/OpenCV/licenses/
 
 %files java
 %{_libdir}/libopencv_java*.so
-%{_libdir}/libopencv_java.so
 %{_jnidir}/opencv-*.jar
 %{_jnidir}/opencv.jar
 
