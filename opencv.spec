@@ -244,6 +244,8 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr      \
       -DINSTALL_PYTHON_EXAMPLES=ON     \
       -DOPENCV_ENABLE_NONFREE=ON       \
       -DBUILD_opencv_cvv=ON            \
+      -DOPENCV_PYTHON2_INSTALL_PATH=%{python2_sitearch} \
+      -DOPENCV_PYTHON3_INSTALL_PATH=%{python3_sitearch} \
       -Wno-dev  ..
 
 make  VERBOSE=0
@@ -324,11 +326,11 @@ rm -rf %{buildroot}%{_datadir}/OpenCV/licenses/
 %{_docdir}/%{name}-doc/
 
 %files -n python2-%{name}
-%{python2_sitearch}/cv2*.so
+%{python2_sitearch}/cv2/
 
 %files -n python3-%{name}
-%{python3_sitearch}/cv2.cpython-3*.so
-%{_bindir}/setup_vars_opencv3.sh
+%{python3_sitearch}/cv2/
+%{_bindir}/setup_vars_opencv4.sh
 
 %files contrib
 %{_libdir}/libopencv_aruco.so.%{abiver}*
@@ -371,10 +373,10 @@ rm -rf %{buildroot}%{_datadir}/OpenCV/licenses/
 %{_includedir}/opencv4/opencv2/xfeatures2d/nonfree.hpp
 
 %files static
-%{_libdir}/opencv4/3rdparty/%{_lib}/libcorrespondence.a
-%{_libdir}/opencv4/3rdparty/%{_lib}/libmultiview.a
-%{_libdir}/opencv4/3rdparty/%{_lib}/libnumeric.a
-%{_libdir}/opencv4/3rdparty/%{_lib}/libsimple_pipeline.a
+%{_libdir}/opencv4/3rdparty/libcorrespondence.a
+%{_libdir}/opencv4/3rdparty/libmultiview.a
+%{_libdir}/opencv4/3rdparty/libnumeric.a
+%{_libdir}/opencv4/3rdparty/libsimple_pipeline.a
 %endif
 
 %files java
