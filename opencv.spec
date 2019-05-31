@@ -13,7 +13,7 @@
 
 Name:           opencv
 Version:        4.1.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
 Url:            http://opencv.org
@@ -271,12 +271,21 @@ ln -sf %{_jnidir}/opencv-%{javaver}.jar %{buildroot}/%{_jnidir}/opencv.jar
 # Fix rpmlint warning "doc-file-dependency"
 chmod 644 %{buildroot}%{_docdir}/%{name}-doc/examples/python/*.py
 
-%fdupes -s %{buildroot}%{_docdir}/%{name}-doc/examples
-%fdupes -s %{buildroot}%{_includedir}
+%fdupes -s %{buildroot}/%{_docdir}/%{name}-doc/examples
+%fdupes -s %{buildroot}/%{_includedir}
 
 find %{buildroot} -name '*.la' -delete
 
-rm -rf %{buildroot}%{_datadir}/OpenCV/licenses/
+rm -rf %{buildroot}/%{_datadir}/OpenCV/licenses/
+
+# Compatibility
+pushd %{buildroot}/%{_includedir}/
+ln -sf opencv4/opencv2 opencv2
+popd
+
+pushd %{buildroot}/%{_libdir}/pkgconfig
+ln -sf opencv4.pc opencv.pc
+popd
 
 %ldconfig_scriptlets core
 
@@ -318,10 +327,12 @@ rm -rf %{buildroot}%{_datadir}/OpenCV/licenses/
 %{_includedir}/opencv4
 %{_libdir}/lib*.so
 %{_libdir}/pkgconfig/opencv4.pc
+%{_libdir}/pkgconfig/opencv.pc
 %{_libdir}/cmake/opencv4/*.cmake
 %exclude %{_includedir}/opencv4/opencv2/xfeatures2d.hpp
 %exclude %{_includedir}/opencv4/opencv2/xfeatures2d/cuda.hpp
 %exclude %{_includedir}/opencv4/opencv2/xfeatures2d/nonfree.hpp
+%{_includedir}/opencv2
 
 %files doc
 %{_docdir}/%{name}-doc/
@@ -388,6 +399,9 @@ rm -rf %{buildroot}%{_datadir}/OpenCV/licenses/
 %{_jnidir}/opencv.jar
 
 %changelog
+
+* Thu May 30 2019 David Vásquez <davidva AT tuta DOT io> - 4.1.0-8
+- Compatibility transitional
 
 * Tue May 21 2019 David Vásquez <davidva AT tuta DOT io> - 4.1.0-7
 - Updated to 4.1.0-7
