@@ -13,7 +13,7 @@
 
 Name:           opencv
 Version:        4.1.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
 Url:            http://opencv.org
@@ -198,8 +198,7 @@ Summary:	Java bindings for apps which use OpenCV
 Requires:	java-headless
 Requires:	javapackages-filesystem
 Requires:	%{name}-core = %{version}-%{release}
-Provides:	libopencv_java.so%{?_isa} = %{version}-%{release}
-Obsoletes:	libopencv_java.so%{?_isa} < %{version}-%{release}
+Provides:	libopencv_java.so()(64bit)
  
 %description 	java
 This package contains Java bindings for the OpenCV library.
@@ -399,6 +398,9 @@ popd
 %{_jnidir}/opencv.jar
 
 %changelog
+
+* Fri May 31 2019 David Vásquez <davidva AT tuta DOT io> - 4.1.0-9
+- opencv-java provides change
 
 * Thu May 30 2019 David Vásquez <davidva AT tuta DOT io> - 4.1.0-8
 - Compatibility transitional
