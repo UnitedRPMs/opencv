@@ -12,8 +12,8 @@
 %bcond_with clang
 
 Name:           opencv
-Version:        4.1.0
-Release:        9%{?dist}
+Version:        4.1.1
+Release:        7%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
 Url:            http://opencv.org
@@ -398,6 +398,9 @@ popd
 %{_jnidir}/opencv.jar
 
 %changelog
+
+* Fri Aug 02 2019 David Vásquez <davidva AT tuta DOT io> - 4.1.1-7
+- Updated to 4.1.1
 
 * Fri May 31 2019 David Vásquez <davidva AT tuta DOT io> - 4.1.0-9
 - opencv-java provides change
