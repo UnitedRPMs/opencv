@@ -132,7 +132,6 @@ This package contains the OpenCV documentation, samples and examples programs.
 Summary:        Python2 bindings for apps which use OpenCV
 Requires:       %{name} = %{version}-%{release}
 Requires:       python2-numpy
-%{?python_provide:%python_provide python2-%{srcname}}
 # Remove before F30
 %if 0%{?fedora} <= 30
 Provides:       %{name}-python = %{version}-%{release}
@@ -148,7 +147,6 @@ This package contains Python bindings for the OpenCV library.
 Summary:        Python3 bindings for apps which use OpenCV
 Requires:       %{name} = %{version}-%{release}
 Requires:       python3-numpy
-%{?python_provide:%python_provide python3-%{srcname}}
 # Remove before F30
 Provides:       %{name}-python3 = %{version}-%{release}
 Provides:       %{name}-python3%{?_isa} = %{version}-%{release}
