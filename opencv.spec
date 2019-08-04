@@ -5,7 +5,7 @@
 
 %global debug_package %{nil}
 %global abiver 4.1
-%global javaver 410
+%global javaver 411
 %bcond_without qt5
 %bcond_without freeworld
 %bcond_with cuda
@@ -122,7 +122,6 @@ Summary:        docs files
 Requires:       %{name}-devel = %{version}-%{release}
 BuildArch:      noarch
 Provides:       %{name}-devel-docs = %{version}-%{release}
-Obsoletes:      %{name}-devel-docs < %{version}-%{release}
 
 %description    doc
 This package contains the OpenCV documentation, samples and examples programs.
@@ -136,7 +135,6 @@ Requires:       python2-numpy
 %if 0%{?fedora} <= 30
 Provides:       %{name}-python = %{version}-%{release}
 Provides:       %{name}-python%{?_isa} = %{version}-%{release}
-Obsoletes:      %{name}-python < %{version}-%{release}
 %endif
 
 %description    -n python2-%{name}
@@ -150,7 +148,7 @@ Requires:       python3-numpy
 # Remove before F30
 Provides:       %{name}-python3 = %{version}-%{release}
 Provides:       %{name}-python3%{?_isa} = %{version}-%{release}
-Obsoletes:      %{name}-python3 < %{version}-%{release}
+
 
 %description    -n python3-%{name}
 This package contains Python3 bindings for the OpenCV library.
