@@ -296,6 +296,7 @@ popd
 %{_datadir}/opencv4/haarcascades
 %{_datadir}/opencv4/lbpcascades
 %{_datadir}/opencv4/valgrind*
+%{_datadir}/opencv4/quality/
 
 %files core
 %{_libdir}/libopencv_core.so.%{abiver}*
