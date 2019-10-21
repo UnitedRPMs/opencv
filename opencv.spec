@@ -316,7 +316,6 @@ popd
 %{_libdir}/libopencv_videoio.so.%{abiver}*
 %{_libdir}/libopencv_videostab.so.%{abiver}*
 %{_libdir}/libopencv_sfm.so.%{abiver}*
-%{_libdir}/libopencv_dnn_objdetect.so.%{abiver}*
 %{_libdir}/libopencv_features2d.so.%{abiver}*
 
 %files devel
@@ -348,6 +347,8 @@ popd
 %{_libdir}/libopencv_ccalib.so.%{abiver}*
 %{_libdir}/libopencv_datasets.so.%%{abiver}*
 %{_libdir}/libopencv_dnn.so.%{abiver}*
+%{_libdir}/libopencv_dnn_objdetect.so.%{abiver}*
+%{_libdir}/libopencv_dnn_superres.so.%{abiver}*
 %{_libdir}/libopencv_dpm.so.%{abiver}*
 %{_libdir}/libopencv_face.so.%{abiver}*
 %{_libdir}/libopencv_freetype.so.%{abiver}*
