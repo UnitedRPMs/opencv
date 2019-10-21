@@ -5,14 +5,14 @@
 
 %global debug_package %{nil}
 %global abiver 4.1
-%global javaver 411
+%global javaver 412
 %bcond_without qt5
 %bcond_without freeworld
 %bcond_with cuda
 %bcond_with clang
 
 Name:           opencv
-Version:        4.1.1
+Version:        4.1.2
 Release:        7%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
@@ -395,6 +395,9 @@ popd
 %{_jnidir}/opencv.jar
 
 %changelog
+
+* Mon Oct 21 2019 David Vásquez <davidva AT tuta DOT io> - 4.1.2-7
+- Updated to 4.1.2
 
 * Fri Aug 02 2019 David Vásquez <davidva AT tuta DOT io> - 4.1.1-7
 - Updated to 4.1.1
