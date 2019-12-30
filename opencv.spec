@@ -4,15 +4,15 @@
 # 3. https://build.opensuse.org/package/show/openSUSE%3AFactory/opencv
 
 %global debug_package %{nil}
-%global abiver 4.1
-%global javaver 412
+%global abiver 4.2
+%global javaver 420
 %bcond_without qt5
 %bcond_without freeworld
 %bcond_with cuda
 %bcond_with clang
 
 Name:           opencv
-Version:        4.1.2
+Version:        4.2.0
 Release:        7%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
@@ -203,6 +203,7 @@ This package contains Java bindings for the OpenCV library.
 %setup -n opencv-%{version} -a 1 
 
 # Necessary Modules 
+rm -rf modules/cudabgsegm
 mv -f opencv_contrib-%{version}/modules/* modules/
 cp opencv_contrib-%{version}/LICENSE LICENSE.contrib
 
@@ -396,6 +397,9 @@ popd
 %{_jnidir}/opencv.jar
 
 %changelog
+
+* Sat Dec 28 2019 David Vásquez <davidva AT tuta DOT io> - 4.2.0-7
+- Updated to 4.2.0
 
 * Mon Oct 21 2019 David Vásquez <davidva AT tuta DOT io> - 4.1.2-7
 - Updated to 4.1.2
