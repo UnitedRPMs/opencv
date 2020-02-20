@@ -13,7 +13,7 @@
 
 Name:           opencv
 Version:        4.2.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
 Url:            http://opencv.org
@@ -318,6 +318,7 @@ popd
 %{_libdir}/libopencv_videostab.so.%{abiver}*
 %{_libdir}/libopencv_sfm.so.%{abiver}*
 %{_libdir}/libopencv_features2d.so.%{abiver}*
+%{_libdir}/libopencv_gapi.so.%{abiver}*
 
 %files devel
 %{_includedir}/opencv4
@@ -371,7 +372,6 @@ popd
 %{_libdir}/libopencv_ximgproc.so.%{abiver}*
 %{_libdir}/libopencv_xobjdetect.so.%{abiver}*
 %{_libdir}/libopencv_xphoto.so.%{abiver}*
-%{_libdir}/libopencv_gapi.so.%{abiver}*
 %{_libdir}/libopencv_quality.so.%{abiver}*
 
 %if %{with freeworld}
@@ -397,6 +397,9 @@ popd
 %{_jnidir}/opencv.jar
 
 %changelog
+
+* Thu Feb 20 2020 David Vásquez <davidva AT tuta DOT io> - 4.2.0-8
+- Rebuilt for compatibility
 
 * Sat Dec 28 2019 David Vásquez <davidva AT tuta DOT io> - 4.2.0-7
 - Updated to 4.2.0
