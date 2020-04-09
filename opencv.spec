@@ -21,8 +21,8 @@
 # 3. https://build.opensuse.org/package/show/openSUSE%3AFactory/opencv
 
 %global debug_package %{nil}
-%global abiver 4.2
-%global javaver 420
+%global abiver 4.3
+%global javaver 430
 %bcond_without qt5
 %bcond_without freeworld
 %bcond_with cuda
@@ -390,6 +390,10 @@ popd
 %{_libdir}/libopencv_xobjdetect.so.%{abiver}*
 %{_libdir}/libopencv_xphoto.so.%{abiver}*
 %{_libdir}/libopencv_quality.so.%{abiver}*
+%{_libdir}/libopencv_alphamat.so.%{abiver}*
+%{_libdir}/libopencv_intensity_transform.so.%{abiver}*
+%{_libdir}/libopencv_rapid.so.%{abiver}*
+
 
 %if %{with freeworld}
 %files xfeatures2d
