@@ -30,7 +30,7 @@
 
 Name:           opencv
 Version:        4.3.0
-Release:        7%{?dist}
+Release:        9%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
 Url:            http://opencv.org
@@ -84,7 +84,11 @@ BuildRequires:  pkgconfig(QtTest)
 BuildRequires:  python2-devel
 BuildRequires:  python2-numpy
 BuildRequires:  python2-rpm-macros
+%if 0%{?fedora} >= 33
+BuildRequires:  python3.9-devel
+%else
 BuildRequires:  python3-devel
+%endif
 BuildRequires:  python3-numpy
 BuildRequires:  swig >= 1.3.24
 %if %{with freeworld}
@@ -418,6 +422,9 @@ popd
 %{_jnidir}/opencv.jar
 
 %changelog
+
+* Sun May 31 2020 David Vásquez <davidva AT tuta DOT io> - 4.3.0-9
+- Rebuilt for python3.9
 
 * Wed Apr 08 2020 David Vásquez <davidva AT tuta DOT io> - 4.3.0-8
 - Updated to 4.3.0
