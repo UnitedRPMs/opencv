@@ -21,16 +21,16 @@
 # 3. https://build.opensuse.org/package/show/openSUSE%3AFactory/opencv
 
 %global debug_package %{nil}
-%global abiver 4.3
-%global javaver 430
+%global abiver 4.4
+%global javaver 440
 %bcond_without qt5
 %bcond_without freeworld
 %bcond_with cuda
 %bcond_with clang
 
 Name:           opencv
-Version:        4.3.0
-Release:        9%{?dist}
+Version:        4.4.0
+Release:        7%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
 Url:            http://opencv.org
@@ -422,6 +422,9 @@ popd
 %{_jnidir}/opencv.jar
 
 %changelog
+
+* Sat Aug 08 2020 David Vásquez <davidva AT tuta DOT io> - 4.4.0-7
+- Updated to 4.4.0
 
 * Sun May 31 2020 David Vásquez <davidva AT tuta DOT io> - 4.3.0-9
 - Rebuilt for python3.9
