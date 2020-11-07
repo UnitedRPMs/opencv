@@ -21,16 +21,16 @@
 # 3. https://build.opensuse.org/package/show/openSUSE%3AFactory/opencv
 
 %global debug_package %{nil}
-%global abiver 4.4
-%global javaver 440
+%global abiver 4.5
+%global javaver 450
 %bcond_without qt5
 %bcond_without freeworld
 %bcond_with cuda
 %bcond_with clang
 
 Name:           opencv
-Version:        4.4.0
-Release:        8%{?dist}
+Version:        4.5.0
+Release:        7%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
 Url:            http://opencv.org
@@ -242,11 +242,10 @@ export CXX=g++
 %endif
 
 mkdir -p build
-pushd build
 
 # cmake macro fails build
 
-cmake -DCMAKE_INSTALL_PREFIX=/usr      \
+%cmake -B build                        \
       -DCMAKE_BUILD_TYPE=Release       \
       -DENABLE_CXX11=ON                \
       -DBUILD_PERF_TESTS=OFF           \
@@ -263,17 +262,13 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr      \
       -DBUILD_opencv_cvv=ON            \
       -DOPENCV_PYTHON2_INSTALL_PATH=%{python2_sitearch} \
       -DOPENCV_PYTHON3_INSTALL_PATH=%{python3_sitearch} \
-      -Wno-dev  ..
+      -Wno-dev  
 
-make  VERBOSE=0
+make -C build VERBOSE=0
 
-popd
 
 %install
-
-pushd build
-%make_install VERBOSE=0
-popd
+%make_install -C build VERBOSE=0
 
 mkdir -p %{buildroot}%{_docdir}/%{name}-doc
 mv %{buildroot}/%{_datadir}/opencv4/samples %{buildroot}/%{_docdir}/%{name}-doc/examples
@@ -397,7 +392,7 @@ popd
 %{_libdir}/libopencv_xphoto.so.%{abiver}*
 %{_libdir}/libopencv_quality.so.%{abiver}*
 %{_libdir}/libopencv_rapid.so.%{abiver}*
-
+%{_libdir}/libopencv_mcc.so.%{abiver}*
 
 %if %{with freeworld}
 %files xfeatures2d
@@ -422,6 +417,9 @@ popd
 %{_jnidir}/opencv.jar
 
 %changelog
+
+* Sun Nov 01 2020 David Vásquez <davidva AT tuta DOT io> - 4.5.0-7
+- Updated to 4.5.0
 
 * Sat Aug 08 2020 David Vásquez <davidva AT tuta DOT io> - 4.4.0-8
 - Fix compatibility
