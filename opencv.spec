@@ -1,7 +1,7 @@
 #
 # spec file for package opencv
 #
-# Copyright (c) 2020 UnitedRPMs.
+# Copyright (c) 2021 UnitedRPMs.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -22,14 +22,14 @@
 
 %global debug_package %{nil}
 %global abiver 4.5
-%global javaver 450
+%global javaver 451
 %bcond_without qt5
 %bcond_without freeworld
 %bcond_with cuda
 %bcond_with clang
 
 Name:           opencv
-Version:        4.5.0
+Version:        4.5.1
 Release:        7%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
@@ -417,6 +417,9 @@ popd
 %{_jnidir}/opencv.jar
 
 %changelog
+
+* Fri Jan 22 2021 David Vásquez <davidva AT tuta DOT io> - 4.5.1-7
+- Updated to 4.5.1
 
 * Sun Nov 01 2020 David Vásquez <davidva AT tuta DOT io> - 4.5.0-7
 - Updated to 4.5.0
