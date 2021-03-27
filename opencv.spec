@@ -30,7 +30,7 @@
 
 Name:           opencv
 Version:        4.5.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
 Url:            http://opencv.org
@@ -110,6 +110,7 @@ BuildRequires:  java-devel
 
 BuildRequires:	gstreamer1-plugins-base-devel
 BuildRequires:	tbb-devel
+BuildRequires:	libatomic
 
 %description
 OpenCV means Intel® Open Source Computer Vision Library. It is a collection of
@@ -262,6 +263,8 @@ mkdir -p build
       -DBUILD_opencv_cvv=ON            \
       -DOPENCV_PYTHON2_INSTALL_PATH=%{python2_sitearch} \
       -DOPENCV_PYTHON3_INSTALL_PATH=%{python3_sitearch} \
+      -DCMAKE_CXX_FLAGS=-latomic \
+      -DOPENCV_EXTRA_EXE_LINKER_FLAGS=-latomic \
       -Wno-dev  
 
 make -C build VERBOSE=0
@@ -417,6 +420,9 @@ popd
 %{_jnidir}/opencv.jar
 
 %changelog
+
+* Tue Feb 09 2021 David Vásquez <davidva AT tuta DOT io> - 4.5.1-8
+- Rebuilt
 
 * Fri Jan 22 2021 David Vásquez <davidva AT tuta DOT io> - 4.5.1-7
 - Updated to 4.5.1
