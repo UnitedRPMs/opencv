@@ -22,15 +22,15 @@
 
 %global debug_package %{nil}
 %global abiver 4.5
-%global javaver 451
+%global javaver 452
 %bcond_without qt5
 %bcond_without freeworld
 %bcond_with cuda
 %bcond_with clang
 
 Name:           opencv
-Version:        4.5.1
-Release:        8%{?dist}
+Version:        4.5.2
+Release:        7%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
 Url:            http://opencv.org
@@ -396,6 +396,8 @@ popd
 %{_libdir}/libopencv_quality.so.%{abiver}*
 %{_libdir}/libopencv_rapid.so.%{abiver}*
 %{_libdir}/libopencv_mcc.so.%{abiver}*
+%{_libdir}/libopencv_wechat_qrcode.so.%{abiver}
+%{_libdir}/libopencv_wechat_qrcode.so.%{abiver}.*
 
 %if %{with freeworld}
 %files xfeatures2d
@@ -420,6 +422,9 @@ popd
 %{_jnidir}/opencv.jar
 
 %changelog
+
+* Sat Apr 17 2021 David Vásquez <davidva AT tuta DOT io> - 4.5.2-7
+- Updated to 4.5.2
 
 * Tue Feb 09 2021 David Vásquez <davidva AT tuta DOT io> - 4.5.1-8
 - Rebuilt
