@@ -20,16 +20,27 @@
 # 2. https://src.fedoraproject.org/rpms/opencv
 # 3. https://build.opensuse.org/package/show/openSUSE%3AFactory/opencv
 
+
 %global debug_package %{nil}
+
+%undefine _python_bytecompile_extra 
+
+%global _python_bytecompile_extra %{nil}
+
+%undefine __brp_python_bytecompile
+%global __brp_python_bytecompile %{nil}
+
+%undefine  py_byte_compile
+
 %global abiver 4.5
-%global javaver 452
+%global javaver 453
 %bcond_without qt5
 %bcond_without freeworld
 %bcond_with cuda
 %bcond_with clang
 
 Name:           opencv
-Version:        4.5.2
+Version:        4.5.3
 Release:        7%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
@@ -84,11 +95,7 @@ BuildRequires:  pkgconfig(QtTest)
 BuildRequires:  python2-devel
 BuildRequires:  python2-numpy
 BuildRequires:  python2-rpm-macros
-%if 0%{?fedora} >= 33
-BuildRequires:  python3.9-devel
-%else
 BuildRequires:  python3-devel
-%endif
 BuildRequires:  python3-numpy
 BuildRequires:  swig >= 1.3.24
 %if %{with freeworld}
@@ -302,6 +309,11 @@ pushd %{buildroot}/%{_libdir}/pkgconfig
 ln -sf opencv4.pc opencv.pc
 popd
 
+
+sed -i 's|/bin/bash|/usr/bin/bash|g' %{buildroot}/usr/bin/setup_vars_opencv4.sh
+
+
+
 %ldconfig_scriptlets core
 
 %ldconfig_scriptlets contrib
@@ -365,6 +377,7 @@ popd
 %files contrib
 %{_libdir}/libopencv_aruco.so.%{abiver}*
 %{_libdir}/libopencv_bgsegm.so.%{abiver}*
+%{_libdir}/libopencv_barcode.so.%{abiver}*
 %{_libdir}/libopencv_bioinspired.so.%{abiver}*
 %{_libdir}/libopencv_calib3d.so.%{abiver}*
 %{_libdir}/libopencv_ccalib.so.%{abiver}*
@@ -422,6 +435,9 @@ popd
 %{_jnidir}/opencv.jar
 
 %changelog
+
+* Mon Aug 02 2021 David Va <davidva AT tuta DOT io> - 4.5.3-7
+- Updated to 4.5.3
 
 * Sat Apr 17 2021 David Vásquez <davidva AT tuta DOT io> - 4.5.2-7
 - Updated to 4.5.2
