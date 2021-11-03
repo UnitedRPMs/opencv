@@ -33,14 +33,14 @@
 %undefine  py_byte_compile
 
 %global abiver 4.5
-%global javaver 453
+%global javaver 454
 %bcond_without qt5
 %bcond_without freeworld
 %bcond_with cuda
 %bcond_with clang
 
 Name:           opencv
-Version:        4.5.3
+Version:        4.5.4
 Release:        7%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
@@ -63,8 +63,7 @@ BuildRequires:  tbb-devel
 BuildRequires:  unzip 
 BuildRequires:  ccache
 
-BuildRequires:  pkgconfig(IlmBase)
-BuildRequires:  pkgconfig(OpenEXR)
+BuildRequires:  openexr-devel >= 3.1.1
 BuildRequires:  pkgconfig(glu)
 BuildRequires:  pkgconfig(libdc1394-2)
 BuildRequires:  pkgconfig(libgphoto2)
@@ -435,6 +434,9 @@ sed -i 's|/bin/bash|/usr/bin/bash|g' %{buildroot}/usr/bin/setup_vars_opencv4.sh
 %{_jnidir}/opencv.jar
 
 %changelog
+
+* Mon Nov 01 2021 David Va <davidva AT tuta DOT io> - 4.5.4-7
+- Updated to 4.5.4
 
 * Mon Aug 02 2021 David Va <davidva AT tuta DOT io> - 4.5.3-7
 - Updated to 4.5.3
