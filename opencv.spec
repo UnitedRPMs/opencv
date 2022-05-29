@@ -42,13 +42,15 @@
 
 Name:           opencv
 Version:        4.5.5
-Release:        7%{?dist}
+Release:        9%{?dist}
 Summary:        Collection of algorithms for computer vision
 License:        BSD
 Url:            http://opencv.org
 Source0:	https://github.com/opencv/opencv/archive/%{version}.zip
 Source1:        https://github.com/opencv/opencv_contrib/archive/%{version}.tar.gz
 Patch:		ffmpeg5.patch
+Patch1:		0001-highgui-Fix-unresolved-OpenGL-functions-for-Qt-backe.patch
+Patch2:		vtk9.patch
 
 %if %{with clang}
 BuildRequires:	clang
@@ -94,7 +96,7 @@ BuildRequires:  pkgconfig(QtOpenGL)
 BuildRequires:  pkgconfig(QtTest)
 %endif
 
-BuildRequires:  python2-devel
+BuildRequires:  python2.7
 BuildRequires:  python2-numpy
 BuildRequires:  python2-rpm-macros
 BuildRequires:  python3-devel
@@ -110,6 +112,9 @@ BuildRequires:  cuda
 BuildRequires:  openblas-devel
 
 BuildRequires:  gcc, gcc-c++
+%if 0%{?fedora} >= 36
+BuildRequires:	annobin-plugin-gcc
+%endif
 %if 0%{?fedora} >= 29
 BuildRequires:	python-unversioned-command
 %endif
@@ -120,6 +125,8 @@ BuildRequires:  java-devel
 BuildRequires:	gstreamer1-plugins-base-devel
 BuildRequires:	tbb-devel
 BuildRequires:	libatomic
+#BuildRequires:  ade-devel >= 0.1.0
+BuildRequires:  vtk-devel
 
 %description
 OpenCV means Intel® Open Source Computer Vision Library. It is a collection of
@@ -233,6 +240,8 @@ This package contains Java bindings for the OpenCV library.
 %prep
 %setup -n opencv-%{version} -a 1 
 %patch -p1
+%patch1 -p1
+%patch2 -p1
 # Necessary Modules 
 rm -rf modules/cudabgsegm
 mv -f opencv_contrib-%{version}/modules/* modules/
@@ -240,6 +249,7 @@ cp opencv_contrib-%{version}/LICENSE LICENSE.contrib
 
 # Remove Windows specific files
 rm -f doc/packaging.txt
+
 
 %build
 
@@ -271,6 +281,8 @@ mkdir -p build
       -DINSTALL_PYTHON_EXAMPLES=ON     \
       -DOPENCV_ENABLE_NONFREE=ON       \
       -DBUILD_opencv_cvv=ON            \
+      -DWITH_ADE=OFF                   \
+      -DWITH_opencv_gapi=OFF           \
       -DOPENCV_PYTHON2_INSTALL_PATH=%{python2_sitearch} \
       -DOPENCV_PYTHON3_INSTALL_PATH=%{python3_sitearch} \
       -DCMAKE_CXX_FLAGS=-latomic \
@@ -336,19 +348,37 @@ sed -i 's|/bin/bash|/usr/bin/bash|g' %{buildroot}/usr/bin/setup_vars_opencv4.sh
 
 %files core
 %{_libdir}/libopencv_core.so.%{abiver}*
+/usr/lib64/libopencv_core.so.%{dotabiver}
 %{_libdir}/libopencv_flann.so.%{abiver}*
+%{_libdir}/libopencv_flann.so.%{dotabiver}
 %{_libdir}/libopencv_highgui.so.%{abiver}*
+%{_libdir}/libopencv_highgui.so.%{dotabiver}
 %{_libdir}/libopencv_imgcodecs.so.%{abiver}*
+%{_libdir}/libopencv_imgcodecs.so.%{dotabiver}
 %{_libdir}/libopencv_imgproc.so.%{abiver}*
+%{_libdir}/libopencv_imgproc.so.%{dotabiver}
 %{_libdir}/libopencv_ml.so.%{abiver}*
+%{_libdir}/libopencv_ml.so.%{dotabiver}
 %{_libdir}/libopencv_objdetect.so.%{abiver}*
+%{_libdir}/libopencv_objdetect.so.%{dotabiver}
 %{_libdir}/libopencv_photo.so.%{abiver}*
+%{_libdir}/libopencv_photo.so.%{dotabiver}
 %{_libdir}/libopencv_stitching.so.%{abiver}*
+%{_libdir}/libopencv_stitching.so.%{dotabiver}
 %{_libdir}/libopencv_video.so.%{abiver}*
+%{_libdir}/libopencv_video.so.%{dotabiver}
 %{_libdir}/libopencv_videoio.so.%{abiver}*
+%{_libdir}/libopencv_videoio.so.%{dotabiver}
 %{_libdir}/libopencv_sfm.so.%{abiver}*
 %{_libdir}/libopencv_features2d.so.%{abiver}*
-%{_libdir}/libopencv_gapi.so.%{abiver}*
+%{_libdir}/libopencv_features2d.so.%{dotabiver}
+#{_libdir}/libopencv_gapi.so.%{abiver}*
+%{_libdir}/libopencv_calib3d.so.%{abiver}*
+%{_libdir}/libopencv_calib3d.so.%{dotabiver}
+%{_libdir}/libopencv_dnn.so.%{abiver}*
+%{_libdir}/libopencv_dnn.so.%{dotabiver}
+%{_libdir}/libopencv_viz.so.%{dotabiver}
+%{_libdir}/libopencv_viz.so.%{abiver}*
 
 %files devel
 %{_includedir}/opencv4
@@ -372,8 +402,6 @@ sed -i 's|/bin/bash|/usr/bin/bash|g' %{buildroot}/usr/bin/setup_vars_opencv4.sh
 %{_bindir}/setup_vars_opencv4.sh
 
 %files contrib
-%{_libdir}/libopencv_calib3d.so.%{abiver}*
-%{_libdir}/libopencv_dnn.so.%{abiver}*
 %{_libdir}/libopencv_alphamat.so.%{abiver}*
 %{_libdir}/libopencv_aruco.so.%{abiver}*
 %{_libdir}/libopencv_bgsegm.so.%{abiver}*
@@ -421,35 +449,25 @@ sed -i 's|/bin/bash|/usr/bin/bash|g' %{buildroot}/usr/bin/setup_vars_opencv4.sh
 %{_libdir}/libopencv_barcode.so.%{dotabiver}
 %{_libdir}/libopencv_bgsegm.so.%{dotabiver}
 %{_libdir}/libopencv_bioinspired.so.%{dotabiver}
-%{_libdir}/libopencv_calib3d.so.%{dotabiver}
 %{_libdir}/libopencv_ccalib.so.%{dotabiver}
-%{_libdir}/libopencv_core.so.%{dotabiver}
 %{_libdir}/libopencv_cvv.so.%{dotabiver}
 %{_libdir}/libopencv_datasets.so.%{dotabiver}
-%{_libdir}/libopencv_dnn.so.%{dotabiver}
 %{_libdir}/libopencv_dnn_objdetect.so.%{dotabiver}
 %{_libdir}/libopencv_dnn_superres.so.%{dotabiver}
 %{_libdir}/libopencv_dpm.so.%{dotabiver}
 %{_libdir}/libopencv_face.so.%{dotabiver}
-%{_libdir}/libopencv_features2d.so.%{dotabiver}
-%{_libdir}/libopencv_flann.so.%{dotabiver}
 %{_libdir}/libopencv_freetype.so.%{dotabiver}
 %{_libdir}/libopencv_fuzzy.so.%{dotabiver}
-%{_libdir}/libopencv_gapi.so.%{dotabiver}
+#{_libdir}/libopencv_gapi.so.%{dotabiver}
 %{_libdir}/libopencv_hdf.so.%{dotabiver}
 %{_libdir}/libopencv_hfs.so.%{dotabiver}
-%{_libdir}/libopencv_highgui.so.%{dotabiver}
+
 %{_libdir}/libopencv_img_hash.so.%{dotabiver}
-%{_libdir}/libopencv_imgcodecs.so.%{dotabiver}
-%{_libdir}/libopencv_imgproc.so.%{dotabiver}
 %{_libdir}/libopencv_intensity_transform.so.%{dotabiver}
 %{_libdir}/libopencv_line_descriptor.so.%{dotabiver}
 %{_libdir}/libopencv_mcc.so.%{dotabiver}
-%{_libdir}/libopencv_ml.so.%{dotabiver}
-%{_libdir}/libopencv_objdetect.so.%{dotabiver}
 %{_libdir}/libopencv_optflow.so.%{dotabiver}
 %{_libdir}/libopencv_phase_unwrapping.so.%{dotabiver}
-%{_libdir}/libopencv_photo.so.%{dotabiver}
 %{_libdir}/libopencv_plot.so.%{dotabiver}
 %{_libdir}/libopencv_quality.so.%{dotabiver}
 %{_libdir}/libopencv_rapid.so.%{dotabiver}
@@ -459,14 +477,11 @@ sed -i 's|/bin/bash|/usr/bin/bash|g' %{buildroot}/usr/bin/setup_vars_opencv4.sh
 %{_libdir}/libopencv_sfm.so.%{dotabiver}
 %{_libdir}/libopencv_shape.so.%{dotabiver}
 %{_libdir}/libopencv_stereo.so.%{dotabiver}
-%{_libdir}/libopencv_stitching.so.%{dotabiver}
 %{_libdir}/libopencv_structured_light.so.%{dotabiver}
 %{_libdir}/libopencv_superres.so.%{dotabiver}
 %{_libdir}/libopencv_surface_matching.so.%{dotabiver}
 %{_libdir}/libopencv_text.so.%{dotabiver}
 %{_libdir}/libopencv_tracking.so.%{dotabiver}
-%{_libdir}/libopencv_video.so.%{dotabiver}
-%{_libdir}/libopencv_videoio.so.%{dotabiver}
 %{_libdir}/libopencv_videostab.so.%{dotabiver}
 %{_libdir}/libopencv_wechat_qrcode.so.%{dotabiver}
 %{_libdir}/libopencv_xfeatures2d.so.%{dotabiver}
@@ -498,6 +513,12 @@ sed -i 's|/bin/bash|/usr/bin/bash|g' %{buildroot}/usr/bin/setup_vars_opencv4.sh
 %{_jnidir}/opencv.jar
 
 %changelog
+
+* Sat May 28 2022 David Va <davidva AT tuta DOT io> - 4.5.5-9
+- Rebuilt
+
+* Sat Apr 30 2022 David Va <davidva AT tuta DOT io> - 4.5.5-8
+- disabled ade
 
 * Sat Jan 22 2022 David Va <davidva AT tuta DOT io> - 4.5.5-7
 - Updated to 4.5.5
